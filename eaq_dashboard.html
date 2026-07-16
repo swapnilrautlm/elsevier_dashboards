@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Elsevier · EAQs — Live Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{--els-orange:#FF6C00;--els-orange-dk:#D95A00;--els-navy:#12233B;--els-ink:#1A1A1A;--els-teal:#2E7C9C;--els-teal-dk:#1F6A8C;--els-green:#3E7D4F;
+--bg:#F7F8FA;--card:#FFFFFF;--line:#E6E8EC;--line-2:#D5D9DF;--ink:#1A1A1A;--ink-2:#4A4E57;--ink-3:#767B85;--ink-4:#AFB4BD;
+--done:#3E7D4F;--active:#FF6C00;--idle:#C7CBD1;--shadow-sm:0 1px 2px rgba(16,24,40,.05),0 1px 1px rgba(16,24,40,.04);--radius:12px;}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:700;color:var(--els-ink);letter-spacing:-.01em}h1{font-size:20px;font-weight:800}h3{font-size:15px}
+.accent{color:var(--els-orange)}
+.brand-bar{background:var(--els-navy);color:#fff;padding:14px 30px;display:flex;align-items:center;gap:20px}
+.brand-bar .logo{font-size:24px;font-weight:800;letter-spacing:-.02em}.brand-bar .logo .dot{color:var(--els-orange)}
+.brand-bar .divider{width:1px;height:32px;background:rgba(255,255,255,.22)}
+.brand-bar .title-block{display:flex;flex-direction:column;line-height:1.2}
+.brand-bar .eyebrow{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--els-orange)}
+.brand-bar .name{font-size:14px;font-weight:600}
+.brand-bar .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:12px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.22)}
+.conn-dot{width:8px;height:8px;border-radius:50%;background:var(--ink-4)}
+.conn-dot.ok{background:#5BD08A}.conn-dot.loading{background:#FFC44D;animation:pulse 1s infinite}.conn-dot.error{background:#FF6B6B}.conn-dot.demo{background:var(--els-orange)}
+@keyframes pulse{50%{opacity:.35}}
+.brand-bar button{font:inherit;cursor:pointer;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.08);color:#fff;padding:8px 14px;border-radius:7px;font-size:13px;font-weight:600}
+.brand-bar button:hover{background:rgba(255,255,255,.18)}
+.topnav{position:sticky;top:0;z-index:50;background:var(--card);border-bottom:1px solid var(--line);padding:0 22px;display:flex;gap:2px;overflow-x:auto;box-shadow:var(--shadow-sm)}
+.topnav .tab{font:inherit;background:transparent;border:0;cursor:pointer;color:var(--ink-2);padding:14px 16px 11px;font-size:13px;font-weight:600;border-bottom:3px solid transparent;white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
+.topnav .tab:hover{color:var(--els-ink)}.topnav .tab.active{color:var(--els-orange);border-bottom-color:var(--els-orange)}
+.topnav .tab .badge{font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--bg);color:var(--ink-3)}
+.topnav .tab.active .badge{background:#FFE9D6;color:var(--els-orange-dk)}
+main{padding:20px 30px 70px;max-width:1500px;margin:0 auto}.panel{display:none}.panel.active{display:block}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 24px;box-shadow:var(--shadow-sm);margin-bottom:14px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--els-orange)}
+.hero .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--els-orange)}
+.hero h1{font-size:20px;margin-top:2px}.hero .lede{font-size:13.5px;color:var(--ink-2);margin-top:4px}
+.hero .meta-row{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--ink-3);margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.hero .meta-row b{color:var(--ink-2);font-weight:600}
+.kpi-row{display:grid;gap:14px;margin-bottom:16px}.kpi-row.c4{grid-template-columns:repeat(4,1fr)}.kpi-row.c6{grid-template-columns:repeat(6,1fr)}
+@media(max-width:1100px){.kpi-row.c6{grid-template-columns:repeat(3,1fr)}}@media(max-width:1000px){.kpi-row.c4{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.kpi-row.c4,.kpi-row.c6{grid-template-columns:1fr}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 18px;position:relative;overflow:hidden;box-shadow:var(--shadow-sm)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--els-orange)}
+.kpi.teal::before{background:var(--els-teal)}.kpi.green::before{background:var(--els-green)}.kpi.navy::before{background:var(--els-navy)}.kpi.grey::before{background:var(--ink-4)}
+.kpi .label{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.kpi .num{font-size:28px;font-weight:800;color:var(--els-ink);margin-top:4px;line-height:1.05}.kpi .sub{font-size:11.5px;color:var(--ink-3);margin-top:4px}
+.grid-2{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin-bottom:16px}@media(max-width:1050px){.grid-2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-sm);margin-bottom:16px}
+.card .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+.card h3{margin-bottom:3px}.card .card-sub{font-size:12px;color:var(--ink-3)}
+.card-head .right{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;cursor:pointer;padding:7px 12px;border-radius:7px;border:1px solid var(--line-2);background:var(--card);color:var(--ink-2);font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:#F1F3F5}.btn.copied{color:var(--els-green);border-color:var(--els-green)}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+table.tbl th,table.tbl td{padding:10px 10px;text-align:center;border-bottom:1px solid var(--line)}
+table.tbl th{font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-3);background:#FBFBFC}
+table.tbl th.l,table.tbl td.l{text-align:left}
+table.tbl td.num{font-variant-numeric:tabular-nums;color:var(--ink-2)}table.tbl td.zero{color:var(--ink-4)}
+table.tbl tr.total-row td{border-top:2px solid var(--line-2);font-weight:800;color:var(--els-ink);background:#FBFBFC}
+table.tbl th.sortable{cursor:pointer;user-select:none;white-space:nowrap}table.tbl th.sortable:hover{color:var(--els-orange)}
+table.tbl th .arw{color:var(--els-orange);font-size:9px;margin-left:2px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-2);margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.legend .item{display:inline-flex;align-items:center;gap:6px}.legend .sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+.chart-box{position:relative;height:300px}.chart-box.sm{height:280px}
+.wf-row{display:grid;grid-template-columns:150px 1fr 110px;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid var(--line)}
+.wf-row:last-child{border-bottom:0}.wf-name{font-size:12.5px;color:var(--els-ink);font-weight:600}
+.wf-track{height:16px;border-radius:6px;background:#F0F2F5;overflow:hidden}.wf-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#FFB067,var(--els-orange))}
+.wf-val{text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink-2)}.wf-val b{color:var(--els-ink)}
+.wl-bar{display:flex;height:14px;border-radius:5px;overflow:hidden;background:var(--idle);min-width:120px}.wl-bar>i{display:block;height:100%}
+.wl-done{background:var(--done)}.wl-active{background:var(--active)}.wl-idle{background:var(--idle)}
+.mini-legend{display:flex;gap:14px;font-size:11.5px;color:var(--ink-2);margin-bottom:12px}
+.caret{display:inline-block;width:14px;color:var(--els-orange);font-size:11px}
+.wl-main.clickable{cursor:pointer}.wl-main.clickable:hover{background:#FBFBFC}
+.sub-wrap{padding:6px 0 10px 2px}table.tbl.sub{background:#FCFCFD;border:1px solid var(--line);border-radius:6px;margin:2px 0}table.tbl.sub th{background:#F4F6F8}table.tbl.sub td,table.tbl.sub th{padding:7px 9px}
+.filterbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.filterbar input,.filterbar select{font:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--line-2);border-radius:7px;background:var(--card);color:var(--ink)}
+.filterbar input[type=search]{min-width:230px}
+.itcount{margin-left:auto;font-size:12px;color:var(--ink-3);font-weight:500;background:#FFF3E9;border:1px solid #FFE0C4;border-radius:999px;padding:6px 13px;white-space:nowrap}
+.itcount b{color:var(--els-orange-dk);font-weight:800}
+.tbl-scroll{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:8px}.tbl-scroll table.tbl th{position:sticky;top:0;z-index:1}
+.foot{font-size:11.5px;color:var(--ink-4);text-align:center;margin-top:26px}.muted{color:var(--ink-3);font-size:12.5px}
+.setup{max-width:760px;margin:14px auto;background:#FBFBFC;border:1px dashed var(--line-2);border-radius:10px;padding:14px 18px;font-size:12.5px;color:var(--ink-2)}.setup code{background:rgba(255,108,0,.10);color:var(--els-orange-dk);padding:1px 6px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="brand-bar">
+  <div class="logo">Elsevier<span class="dot">.</span></div>
+  <div class="divider"></div>
+  <div class="title-block"><span class="eyebrow">EAQs · Active Titles with LearningMate</span><span class="name">EAQ Production Dashboard</span></div>
+  <div class="right"><span class="pill" id="conn"><span class="conn-dot demo" id="conn-dot"></span><span id="conn-text">Preview data</span></span><button id="refreshBtn" type="button">&#8635; Refresh</button></div>
+</div>
+<nav class="topnav" id="topnav">
+  <button class="tab active" data-key="overview">Overview</button>
+  <button class="tab" data-key="Hockenberry">Hockenberry <span class="badge" id="b-h">&mdash;</span></button>
+  <button class="tab" data-key="Turner">Turner <span class="badge" id="b-t">&mdash;</span></button>
+</nav>
+<main>
+  <section class="panel active" id="panel-overview">
+    <div class="hero"><div class="eyebrow">EAQs 2025-26</div><h1>Active EAQ titles with <span class="accent">LearningMate</span></h1>
+    <p class="lede">Live delivery and production status for Elsevier EAQ titles, sourced directly from the schedule workbook.</p>
+    <div class="meta-row"><span>Source: <b>ELRG6 &ndash; EAQs &ndash; Schedule (LM)</b></span><span>Last synced: <b id="synced">&mdash;</b></span></div></div>
+    <div id="ov-cards"></div>
+    <div class="setup" id="setup"><b>Go live:</b> deploy <code>Elsevier_EAQ_AppsScript.gs</code> as a Web app (Anyone access), then paste the <code>/exec</code> URL into <code>CONFIG.APPS_SCRIPT_URL</code> in this file.</div>
+  </section>
+  <section class="panel" id="panel-detail"></section>
+  <div class="foot">Built by LearningMate for Elsevier &middot; EAQ Content Production</div>
+</main>
+<script>
+var CONFIG={APPS_SCRIPT_URL:'https://script.google.com/a/macros/learningmate.com/s/AKfycbxKSjRv2hGp_n-uRAJSvIMqyktcsOypNDKpPUWhj84joNq2GVo7-rMh2WXY4_zOJTnx/exec',FETCH_TIMEOUT_MS:30000};
+var FALLBACK={"ok":true,"generatedAt":"2026-07-16T00:00:00Z","overview":{"grab1":{"title":"Dashboard June","headers":["EAQ","Total Questions","Questions Delivered","Pending","Completion %"],"rows":[["Hockenberry",744.0,104,640,0.1397849462],["Turner",352.0,255,97,0.7244318182]]},"grab2a":{"title":"Elsevier - EAQs - Active Titles with LearningMate (2025-26)","headers":["Titles","Total # of Questions","EAQs - Delivered to ELS","EAQs - Yet to be Delivered","EAQs under CFI with SMEs/DEs","EAQs in Writing with SMEs","EAQs in Review with DE","EAQs not Assigned to SMEs","GOLD Approved by ELS","Pending to be GOLD","Project Completion %","Start Date","Title End Date"],"rows":[["Hockenberry",657,95,466,71,111,221,0,96,561,0.1461187215,"TBD","2026-07-30"],["Turner: Foundations 7e",352,73,34,0,23,11,0,245,107,0.6960227273,"2026-01-07","2026-05-29"],["Mallette, 2e",11,0,0,0,0,0,0,11,0,1,"2026-04-01","2026-03-31"]]},"grab2b":{"title":"Weekly Status","headers":["Titles","Total # of Questions","Alpha Delivered","GOLD Approved by ELS","CFI","In Authoring","Not Assigned","Completion\n%","Expected Completion"],"rows":[["Hockenberry",657,103.0,0,71,352,63,0.17204301075268819,"2026-07-31"],["Turner: Foundations 7e",352,73,135.0,0,19,0,0,"2026-07-31"]]}},"details":{"Hockenberry":{"name":"Hockenberry","meta":{"total":657,"chapters":26,"smes":13,"delivered":262,"gold":96,"completion":41.1},"workflow":[{"stage":"Authoring","completed":483.0,"pct":73.5},{"stage":"DE Review","completed":457.0,"pct":69.6},{"stage":"SME Fixes","completed":271.0,"pct":41.2},{"stage":"Finalization","completed":262.0,"pct":39.9},{"stage":"Alpha Delivered","completed":262.0,"pct":39.9},{"stage":"ELS Feedback","completed":201.0,"pct":30.6},{"stage":"CFI","completed":130.0,"pct":19.8},{"stage":"GOLD Signoff","completed":96.0,"pct":14.6}],"statusDist":[{"status":"R1 Fixes","count":132},{"status":"Assigned","count":111},{"status":"Final Delivery","count":96},{"status":"CFI Needed","count":71},{"status":"Planned","count":63},{"status":"Alpha Delivered","count":61},{"status":"R2 Fixes","count":54},{"status":"Beta Delivered","count":34},{"status":"R1 Review","count":26},{"status":"R2 Review","count":9}],"smeWorkload":[{"sme":"(AI Generated)","total":131,"chapters":5,"completed":0,"active":81,"notStarted":50},{"sme":"Allyssa Dolphin","total":89,"chapters":3,"completed":25,"active":64,"notStarted":0},{"sme":"Michelle Esco","total":84,"chapters":3,"completed":0,"active":84,"notStarted":0},{"sme":"Jennifer Shepherd","total":84,"chapters":2,"completed":0,"active":84,"notStarted":0},{"sme":"Jasmine Perkins","total":51,"chapters":3,"completed":18,"active":33,"notStarted":0},{"sme":"Kristin Cunningham (sample)","total":42,"chapters":1,"completed":0,"active":42,"notStarted":0},{"sme":"(AI Generated) + Jasmine - 7 + Bryan - 10","total":34,"chapters":1,"completed":34,"active":0,"notStarted":0},{"sme":"Belinda Johnston","total":31,"chapters":2,"completed":0,"active":31,"notStarted":0},{"sme":"(AI Generated) + Bryan review of 28, 2 new.","total":29,"chapters":1,"completed":0,"active":29,"notStarted":0},{"sme":"Allyssa Dolphin/Jasmine Edits - 9","total":26,"chapters":1,"completed":0,"active":26,"notStarted":0},{"sme":"Allyssa Dolphin/Jasmine Edits - 10","total":19,"chapters":1,"completed":19,"active":0,"notStarted":0},{"sme":"Ashley D'Elia","total":16,"chapters":1,"completed":0,"active":16,"notStarted":0},{"sme":"Unassigned","total":13,"chapters":1,"completed":0,"active":0,"notStarted":13},{"sme":"(AI Generated) + Bryan - 8Q(Review)","total":8,"chapters":1,"completed":0,"active":8,"notStarted":0}],"items":[{"chapter":"Chapter 1","title":"Perspectives of Pediatric Nursing","q":29.0,"sme":"(AI Generated) + Bryan review of 28, 2 new.","de":"Tina","status":"CFI Needed","stage":"ELS Feedback"},{"chapter":"Chapter 2","title":"Family, Social, Cultural, and Religious Influences on Child Health Promotion","q":36.0,"sme":"(AI Generated)","de":"Abby","status":"R2 Fixes","stage":"DE Review"},{"chapter":"Chapter 3","title":"Developmental and Genetic Influences on Child Health Promotion","q":27.0,"sme":"(AI Generated)","de":"Tina","status":"R1 Fixes","stage":"DE Review"},{"chapter":"Chapter 4","title":"Communication, Physical, and Developmental Assessment of the Child and Family","q":19.0,"sme":"Allyssa Dolphin/Jasmine Edits - 10","de":"Tina","status":"Final Delivery","stage":"GOLD Signoff"},{"chapter":"Chapter 5","title":"Pain Assessment and Management in Children","q":26.0,"sme":"Allyssa Dolphin/Jasmine Edits - 9","de":"Tina","status":"Beta Delivered","stage":"CFI"},{"chapter":"Chapter 6","title":"Childhood Communicable and Infectious Diseases","q":25.0,"sme":"Allyssa Dolphin","de":"Tina","status":"Final Delivery","stage":"GOLD Signoff"},{"chapter":"Chapter 7","title":"Health Promotion of the Newborn and Family","q":18.0,"sme":"Jasmine Perkins","de":"Tina","status":"Final Delivery","stage":"GOLD Signoff"},{"chapter":"Chapter 8","title":"Health Problems of Newborns","q":18.0,"sme":"Jasmine Perkins","de":"Tina","status":"Alpha Delivered","stage":"Alpha Delivered"},{"chapter":"Chapter 10","title":"Health Problems of Infants","q":26.0,"sme":"Michelle Esco","de":"Tina","status":"R1 Review","stage":"Authoring"},{"chapter":"Chapter 12","title":"Health Promotion of the Preschooler and Family","q":18.0,"sme":"(AI Generated)","de":"Abby","status":"R2 Fixes","stage":"DE Review"},{"chapter":"Chapter 13","title":"Health Problems of Toddlers and Preschoolers","q":20.0,"sme":"Allyssa Dolphin","de":"Tina","status":"R1 Fixes","stage":"DE Review"},{"chapter":"Chapter 14","title":"Health Promotion of the School-Age Child and Family","q":8.0,"sme":"(AI Generated) + Bryan - 8Q(Review)","de":"Tina","status":"Beta Delivered","stage":"CFI"},{"chapter":"Chapter 15","title":"Health Promotion of the Adolescent and Family","q":34.0,"sme":"(AI Generated) + Jasmine - 7 + Bryan - 10","de":"Tina","status":"Final Delivery","stage":"GOLD Signoff"},{"chapter":"Chapter 16","title":"Health Problems of School-Age Children and Adolescents","q":16.0,"sme":"Ashley D'Elia","de":"Tina","status":"Assigned","stage":"\u2014"},{"chapter":"Chapter 17","title":"Impact of Complex Chronic Illness, Disability, or End-of-Life Care on the Child and Family","q":28.0,"sme":"(AI Generated)","de":"","status":"Planned","stage":"\u2014"},{"chapter":"Chapter 19","title":"Family-Centered Care of the Child During Illness and Hospitalization","q":15.0,"sme":"Jasmine Perkins","de":"Tina","status":"Assigned","stage":"\u2014"},{"chapter":"Chapter 20","title":"Pediatric Nursing Interventions and Skills","q":43.0,"sme":"Jennifer Shepherd","de":"Tina","status":"Alpha Delivered","stage":"Alpha Delivered"},{"chapter":"Chapter 21","title":"The Child With Respiratory Dysfunction","q":41.0,"sme":"Jennifer Shepherd","de":"Tina","status":"R1 Fixes","stage":"DE Review"},{"chapter":"Chapter 22","title":"The Child With Gastrointestinal Dysfunction","q":22.0,"sme":"(AI Generated)","de":"","status":"Planned","stage":"\u2014"},{"chapter":"Chapter 23","title":"The Child With Cardiovascular Dysfunction","q":44.0,"sme":"Michelle Esco","de":"Tina","status":"R1 Fixes","stage":"DE Review"},{"chapter":"Chapter 25","title":"The Child With Cancer","q":22.0,"sme":"Belinda Johnston","de":"","status":"Assigned","stage":"\u2014"},{"chapter":"Chapter 26","title":"The Child With Genitourinary Dysfunction","q":14.0,"sme":"Michelle Esco","de":"","status":"Assigned","stage":"\u2014"},{"chapter":"Chapter 27","title":"The Child With Cerebral Dysfunction","q":13.0,"sme":"Unassigned","de":"","status":"Planned","stage":"\u2014"},{"chapter":"Chapter 28","title":"The Child With Endocrine Dysfunction","q":9.0,"sme":"Belinda Johnston","de":"Tina","status":"R2 Review","stage":"SME Fixes"},{"chapter":"Chapter 29","title":"The Child With Musculoskeletal or Articular Dysfunction","q":42.0,"sme":"Kristin Cunningham (sample)","de":"Tina","status":"CFI Needed","stage":"ELS Feedback"},{"chapter":"Chapter 30","title":"The Child With Neuromuscular or Muscular Dysfunction","q":44.0,"sme":"Allyssa Dolphin","de":"Tina","status":"Assigned","stage":"\u2014"}]},"Turner":{"name":"Turner","meta":{"total":352,"chapters":23,"smes":2,"delivered":318,"gold":234,"completion":84.6},"workflow":[{"stage":"Authoring","completed":329.0,"pct":93.5},{"stage":"DE Review","completed":318.0,"pct":90.3},{"stage":"SME Fixes","completed":318.0,"pct":90.3},{"stage":"Finalization","completed":318.0,"pct":90.3},{"stage":"Alpha Delivered","completed":318.0,"pct":90.3},{"stage":"ELS Feedback","completed":305.0,"pct":86.6},{"stage":"CFI","completed":305.0,"pct":86.6},{"stage":"Copyediting","completed":234.0,"pct":66.5},{"stage":"Final Delivery","completed":234.0,"pct":66.5}],"statusDist":[{"status":"Final Delivery","count":234},{"status":"Beta Delivered","count":60},{"status":"Assigned","count":23},{"status":"Alpha Delivered","count":13},{"status":"Copyediting","count":11},{"status":"R1 Review","count":11}],"smeWorkload":[{"sme":"Vicki Simpson","total":232,"chapters":21,"completed":174,"active":58,"notStarted":0},{"sme":"AI Generated","total":120,"chapters":2,"completed":60,"active":60,"notStarted":0}],"items":[{"chapter":"Chapter 1. Public Health Foundations and Population Health","title":"Chapter 1. Public Health Foundations and Population Health","q":9.0,"sme":"Vicki Simpson","de":"Tina","status":"Final Delivery","stage":"Final Delivery"},{"chapter":"Chapter 2. History of Public Health, Public Health Nursing, and Population Health","title":"Chapter 2. History of Public Health, Public Health Nursing, and Population Health","q":7.0,"sme":"Vicki Simpson","de":"Tina","status":"Final Delivery","stage":"Final Delivery"},{"chapter":"Chapter 3. U.S.  and Global Health Care","title":"Chapter 3. U.S.  and Global Health Care","q":10.0,"sme":"Vicki Simpson","de":"Tina","status":"Final Delivery","stage":"Final Delivery"},{"chapter":"Chapter 4. Impact of Health Policy on Care Delivery","title":"Chapter 4. Impact of Health Policy on Care Delivery","q":5.0,"sme":"Vicki Simpson","de":"Tina","status":"Copyediting","stage":"CFI"},{"chapter":"Chapter 5. Economics of Public and Population Health Care Delivery","title":"Chapter 5. Economics of Public and Population Health Care Delivery","q":6.0,"sme":"Vicki Simpson","de":"Tina","status":"Copyediting","stage":"CFI"},{"chapter":"Chapter 7. Building a Culture of Health to Influence Health Equity within Populations","title":"Chapter 7. Building a Culture of Health to Influence Health Equity within Populations","q":45.0,"sme":"Vicki Simpson","de":"Tina","status":"Final Delivery","stage":"Final Delivery"},{"chapter":"Chapter 8. Effects of the Environment on Population Health","title":"Chapter 8. Effects of the Environment on Population Health","q":9.0,"sme":"Vicki Simpson","de":"Tina","status":"Final Delivery","stage":"Final Delivery"},{"chapter":"Chapter 9. Evidence-Based Practice","title":"Chapter 9. Evidence-Based Practice","q":8.0,"sme":"Vicki Simpson","de":"Tina","status":"Alpha Delivered","stage":"Alpha Delivered"},{"chapter":"Chapter 10. Epidemiological Applications","title":"Chapter 10. Epidemiological Applications","q":3.0,"sme":"Vicki Simpson","de":"Tina","status":"Final Delivery","stage":"Final Delivery"},{"chapter":"Chapter 11. Infectious Disease Prevention and Control","title":"Chapter 11. Infectious Disease Prevention and Control","q":1.0,"sme":"Vicki Simpson","de":"Tina","status":"Final Delivery","stage":"Final Delivery"},{"chapter":"Chapter 12. Communicable and Infection Disease Risks","title":"Chapter 12. Communicable and Infection Disease Risks","q":5.0,"sme":"Vicki Simpson","de":"Tina","status":"Alpha Delivered","stage":"Alpha Delivered"},{"chapter":"Chapter 14. Partnerships for Population Health Care Interventions","title":"Chapter 14. Partnerships for Population Health Care Interventions","q":45.0,"sme":"Vicki Simpson","de":"Tina","status":"Final Delivery","stage":"Final Delivery"},{"chapter":"Chapter 15. Management of Populations","title":"Chapter 15. Management of Populations","q":45.0,"sme":"Vicki Simpson","de":"Tina","status":"Final Delivery","stage":"Final Delivery"},{"chapter":"Chapter 17. Public Health Surveillance and Outbreak Investigation","title":"Chapter 17. Public Health Surveillance and Outbreak Investigation","q":4.0,"sme":"Vicki Simpson","de":"Tina","status":"R1 Review","stage":"Authoring"},{"chapter":"Chapter 19. Healthcare Improvement in the Community","title":"Chapter 19. Healthcare Improvement in the Community","q":2.0,"sme":"Vicki Simpson","de":"Tina","status":"R1 Review","stage":"Authoring"},{"chapter":"Chapter 21. Genomics in Public and Population Health Nursing","title":"Chapter 21. Genomics in Public and Population Health Nursing","q":60.0,"sme":"AI Generated","de":"Tina","status":"Beta Delivered","stage":"CFI"},{"chapter":"Chapter 24. Health Inequity and Population Vulnerability","title":"Chapter 24. Health Inequity and Population Vulnerability","q":2.0,"sme":"Vicki Simpson","de":"","status":"Assigned","stage":"\u2014"},{"chapter":"Chapter 22. Maternal, Child, and Adolescent Populations","title":"Chapter 22. Maternal, Child, and Adolescent Populations","q":60.0,"sme":"AI Generated","de":"Tina","status":"Final Delivery","stage":"Final Delivery"},{"chapter":"Chapter 26. Poverty, Homelessness, and Mental Illness","title":"Chapter 26. Poverty, Homelessness, and Mental Illness","q":10.0,"sme":"Vicki Simpson","de":"","status":"Assigned","stage":"\u2014"},{"chapter":"Chapter 29. Public Health Nursing at Local, State, and National Levels","title":"Chapter 29. Public Health Nursing at Local, State, and National Levels","q":5.0,"sme":"Vicki Simpson","de":"Tina","status":"R1 Review","stage":"Authoring"},{"chapter":"Chapter 30. The Faith Community Nurse","title":"Chapter 30. The Faith Community Nurse","q":7.0,"sme":"Vicki Simpson","de":"","status":"Assigned","stage":"\u2014"},{"chapter":"Chapter 31. The Nurse in the Schools","title":"Chapter 31. The Nurse in the Schools","q":2.0,"sme":"Vicki Simpson","de":"","status":"Assigned","stage":"\u2014"},{"chapter":"Chapter 32. The Nurse in Occupational Health","title":"Chapter 32. The Nurse in Occupational Health","q":2.0,"sme":"Vicki Simpson","de":"","status":"Assigned","stage":"\u2014"}]}}};
+var DATA=FALLBACK, activeKey='overview', charts={status:null};
+function fmt(n){return (n==null||n==='')?'0':Math.round(Number(n)).toLocaleString();}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function setConn(s,t){document.getElementById('conn-dot').className='conn-dot '+s;document.getElementById('conn-text').textContent=t;}
+function fmtCell(h,v){h=String(h||'');if(v===''||v==null)return '';
+  if(typeof v==='number'){if(h.indexOf('%')>=0)return ((v<=1.5?v*100:v)).toFixed(1)+'%';return Number.isInteger(v)?v.toLocaleString():(''+v);}
+  var s=String(v);if(h.indexOf('%')>=0){var n=parseFloat(s);if(!isNaN(n))return (n<=1.5?n*100:n).toFixed(1)+'%';}
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)){var d=new Date(s+'T00:00:00');if(!isNaN(d.getTime()))return d.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});}
+  return s;}
+function rawNum(v){if(typeof v==='number')return v;var n=parseFloat(String(v).replace(/[,%]/g,''));return isNaN(n)?null:n;}
+
+/* ---------- OVERVIEW ---------- */
+function renderOverview(){
+  var ov=DATA.overview||{};var host=document.getElementById('ov-cards');host.innerHTML='';
+  var defs=[['grab1','EAQ delivery summary','Questions delivered to Elsevier vs pending.'],
+            ['grab2a','Active titles &mdash; production overview','Full pipeline status per active title.'],
+            ['grab2b','Alpha &amp; GOLD overview','Alpha delivered, GOLD approved and authoring split.']];
+  defs.forEach(function(df,ci){
+    var b=ov[df[0]];if(!b||!b.headers||!b.headers.length)return;
+    var card=document.createElement('div');card.className='card';card.id='ovcard-'+ci;
+    card.innerHTML='<div class="card-head"><div><h3>'+df[1]+'</h3><div class="card-sub">'+df[2]+'</div></div>'+
+      '<div class="right"><button class="btn" data-copytbl="'+ci+'">&#9741; Copy table</button><button class="btn" data-copyimg="'+ci+'">&#128442; Copy image</button></div></div>'+
+      '<div style="overflow-x:auto"><table class="tbl" id="ovt-'+ci+'"></table></div>';
+    host.appendChild(card);
+    sortableTable(document.getElementById('ovt-'+ci),b.headers,b.rows.slice(),{firstColLeft:true});
+  });
+  host.querySelectorAll('[data-copytbl]').forEach(function(btn){btn.addEventListener('click',function(){copyTableEl(document.getElementById('ovt-'+btn.getAttribute('data-copytbl')),btn);});});
+  host.querySelectorAll('[data-copyimg]').forEach(function(btn){btn.addEventListener('click',function(){copyImageEl(document.getElementById('ovcard-'+btn.getAttribute('data-copyimg')),btn);});});
+}
+/* generic sortable table for header+rows arrays */
+function sortableTable(tbl,headers,rows,opts){
+  opts=opts||{};var sort={col:null,dir:1};
+  function draw(){
+    var rr=rows.slice();
+    if(sort.col!==null){var ci=sort.col;rr.sort(function(a,b){var x=a[ci],y=b[ci];var nx=rawNum(x),ny=rawNum(y);
+      if(nx!==null&&ny!==null)return (nx-ny)*sort.dir;
+      x=String(x==null?'':x).toLowerCase();y=String(y==null?'':y).toLowerCase();return x<y?-sort.dir:(x>y?sort.dir:0);});}
+    var h='<thead><tr>'+headers.map(function(hd,i){var act=sort.col===i;var lab=String(hd).replace(/\n/g,' ');
+      return '<th class="'+(i===0&&opts.firstColLeft?'l ':'')+'sortable" data-c="'+i+'">'+esc(lab)+(act?' <span class="arw">'+(sort.dir>0?'▲':'▼')+'</span>':'')+'</th>';}).join('')+'</tr></thead><tbody>';
+    rr.forEach(function(row){h+='<tr>'+headers.map(function(hd,i){var cls=(i===0&&opts.firstColLeft)?'l':'num';return '<td class="'+cls+'">'+esc(fmtCell(hd,row[i]))+'</td>';}).join('')+'</tr>';});
+    h+='</tbody>';tbl.innerHTML=h;
+    tbl.querySelectorAll('th.sortable').forEach(function(th){th.addEventListener('click',function(){var c=+th.getAttribute('data-c');if(sort.col===c)sort.dir=-sort.dir;else{sort.col=c;sort.dir=(c===0?1:-1);}draw();});});
+  }
+  draw();
+}
+
+/* ---------- DETAIL ---------- */
+function renderDetail(name){
+  var d=(DATA.details||{})[name];var host=document.getElementById('panel-detail');
+  if(!d){host.innerHTML='<div class="card"><h3>'+esc(name)+'</h3><p class="muted">No data yet. Click Refresh.</p></div>';return;}
+  var m=d.meta;var maxWf=Math.max.apply(null,d.workflow.map(function(w){return w.completed;}).concat([1]));
+  host.innerHTML=''+
+   '<div class="hero"><div class="eyebrow">Title detail</div><h1>'+esc(name)+' <span class="accent">EAQ tracker</span></h1>'+
+   '<p class="lede">Workflow progress, current status and SME workload. A stage counts complete when its actual date is filled.</p>'+
+   '<div class="meta-row"><span>Total questions: <b>'+fmt(m.total)+'</b></span><span>Chapters: <b>'+fmt(m.chapters)+'</b></span><span>SMEs: <b>'+fmt(m.smes)+'</b></span><span>GOLD approved: <b>'+fmt(m.gold)+'</b></span></div></div>'+
+   '<div class="kpi-row c6">'+kpi('Total Questions',fmt(m.total),'Across '+fmt(m.chapters)+' chapters','navy')+
+     kpi('Alpha Delivered',fmt(m.delivered),'Delivered to ELS','')+
+     kpi('GOLD Approved',fmt(m.gold),'Signed off','green')+
+     kpi('Completion',m.completion+'%','Weighted stage progress','teal')+
+     kpi('Chapters',fmt(m.chapters),'Tracked units','grey')+
+     kpi('SMEs',fmt(m.smes),'Named experts','')+
+   '</div>'+
+   '<div class="grid-2">'+
+    '<div class="card"><div class="card-head"><div><h3>Workflow matrix</h3><div class="card-sub">Questions with each stage&rsquo;s actual date filled.</div></div></div><div id="wf-list"></div></div>'+
+    '<div class="card"><div class="card-head"><div><h3>Current status</h3><div class="card-sub">Questions by Status value.</div></div></div><div class="chart-box sm"><canvas id="statusChart"></canvas></div></div>'+
+   '</div>'+
+   '<div class="card"><div class="card-head"><div><h3>SME workload</h3><div class="card-sub">Questions per SME. Click a name to see their chapters.</div></div><div class="right"><button class="btn" id="wl-toggle">Expand all</button></div></div>'+
+    '<div class="mini-legend"><span class="item"><span class="sw" style="background:var(--done)"></span>GOLD approved</span><span class="item"><span class="sw" style="background:var(--active)"></span>In progress</span><span class="item"><span class="sw" style="background:var(--idle)"></span>Not started</span></div>'+
+    '<div style="overflow-x:auto"><table class="tbl" id="wl-table"></table></div></div>'+
+   '<div class="card" id="items-card"><div class="card-head"><div><h3>Chapter detail</h3><div class="card-sub">Per-chapter breakdown.</div></div><div class="right"><button class="btn" id="it-copytbl">&#9741; Copy table</button></div></div><div id="item-area"></div></div>';
+  // workflow bars
+  document.getElementById('wf-list').innerHTML=d.workflow.map(function(w){var p=Math.round(w.completed/maxWf*100);
+    return '<div class="wf-row"><div class="wf-name">'+esc(w.stage)+'</div><div class="wf-track"><div class="wf-fill" style="width:'+p+'%"></div></div><div class="wf-val"><b>'+fmt(w.completed)+'</b> / '+fmt(m.total)+' ('+w.pct+'%)</div></div>';}).join('');
+  // status chart
+  if(charts.status)charts.status.destroy();
+  charts.status=new Chart(document.getElementById('statusChart'),{type:'bar',data:{labels:d.statusDist.map(function(s){return s.status;}),datasets:[{data:d.statusDist.map(function(s){return s.count;}),backgroundColor:d.statusDist.map(function(s){return /not started|planned|assigned|yet to/i.test(s.status)?'#C7CBD1':(/final delivery|gold/i.test(s.status)?'#3E7D4F':'#FF6C00');}),borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.x+' questions';}}}},scales:{x:{grid:{color:'#EEF0F3'},ticks:{font:{size:11}}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+  renderWL(d);renderItems(d);
+}
+function kpi(l,n,s,c){return '<div class="kpi '+c+'"><div class="label">'+l+'</div><div class="num">'+n+'</div><div class="sub">'+s+'</div></div>';}
+function toggleRow(i){var dr=document.getElementById('wd-'+i),ck=document.getElementById('ck-'+i);if(!dr)return;var o=dr.style.display!=='none';dr.style.display=o?'none':'';if(ck)ck.textContent=o?'▸':'▾';}
+function renderWL(d){
+  var byS={};var has=d.items&&d.items.length;if(has)d.items.forEach(function(it){(byS[it.sme]=byS[it.sme]||[]).push(it);});
+  var cols=[['sme','SME','l'],['total','Questions','n'],['chapters','Chapters','n'],['completed','GOLD','n'],['active','In progress','n'],['notStarted','Not started','n']];
+  var sort={col:null,dir:1};var wlt=document.getElementById('wl-table');
+  function draw(){
+    var list=d.smeWorkload.slice();
+    if(sort.col){list.sort(function(a,b){if(sort.col==='sme'){var x=String(a.sme).toLowerCase(),y=String(b.sme).toLowerCase();return x<y?-sort.dir:(x>y?sort.dir:0);}return ((a[sort.col]||0)-(b[sort.col]||0))*sort.dir;});}
+    var h='<thead><tr><th class="l" style="width:24px"></th>'+cols.map(function(c){var act=sort.col===c[0];return '<th class="'+(c[2]==='l'?'l ':'')+'sortable" data-col="'+c[0]+'">'+c[1]+(act?' <span class="arw">'+(sort.dir>0?'▲':'▼')+'</span>':'')+'</th>';}).join('')+'</tr></thead><tbody>';
+    list.forEach(function(s,idx){var t=s.total||1;
+      h+='<tr class="wl-main'+(has?' clickable':'')+'" data-idx="'+idx+'"><td class="l">'+(has?'<span class="caret" id="ck-'+idx+'">▸</span>':'')+'</td><td class="l">'+esc(s.sme)+'</td><td class="num"><b>'+fmt(s.total)+'</b></td><td class="num">'+fmt(s.chapters)+'</td>'+
+        '<td class="num'+(s.completed?'':' zero')+'">'+fmt(s.completed)+'</td><td class="num'+(s.active?'':' zero')+'">'+fmt(s.active)+'</td><td class="num'+(s.notStarted?'':' zero')+'">'+fmt(s.notStarted)+'</td></tr>';
+      if(has){var il=byS[s.sme]||[];var sub='<tr class="wl-detail" id="wd-'+idx+'" style="display:none"><td></td><td colspan="6" class="l"><div class="sub-wrap"><table class="tbl sub"><thead><tr><th class="l">Chapter</th><th class="l">Questions</th><th class="l">Status</th><th class="l">Current stage</th></tr></thead><tbody>';
+        il.forEach(function(i){sub+='<tr><td class="l">'+esc(i.chapter||i.title)+'</td><td class="l">'+fmt(i.q)+'</td><td class="l">'+esc(i.status)+'</td><td class="l">'+esc(i.stage)+'</td></tr>';});
+        sub+='</tbody></table></div></td></tr>';h+=sub;}
+    });
+    h+='</tbody>';wlt.innerHTML=h;
+    if(has)wlt.querySelectorAll('.wl-main.clickable').forEach(function(row){row.addEventListener('click',function(){toggleRow(row.getAttribute('data-idx'));});});
+    wlt.querySelectorAll('th.sortable').forEach(function(th){th.addEventListener('click',function(){var c=th.getAttribute('data-col');if(sort.col===c)sort.dir=-sort.dir;else{sort.col=c;sort.dir=(c==='sme'?1:-1);}draw();});});
+    var tg=document.getElementById('wl-toggle');if(tg){tg.setAttribute('data-open','0');tg.textContent='Expand all';}
+  }
+  draw();
+  var tg=document.getElementById('wl-toggle');
+  if((d.items&&d.items.length)&&tg)tg.addEventListener('click',function(){var open=tg.getAttribute('data-open')==='1';wlt.querySelectorAll('.wl-detail').forEach(function(dr){dr.style.display=open?'none':'';});wlt.querySelectorAll('.caret').forEach(function(ck){ck.textContent=open?'▸':'▾';});tg.setAttribute('data-open',open?'0':'1');tg.textContent=open?'Expand all':'Collapse all';});
+  else if(tg)tg.style.display='none';
+}
+function renderItems(d){
+  var area=document.getElementById('item-area');
+  if(!d.items||!d.items.length){area.innerHTML='<p class="muted">Chapter rows load from the live sheet.</p>';return;}
+  var cols=[['chapter','Chapter','l'],['title','Title','l'],['q','Questions','n'],['sme','SME','l'],['de','DE','l'],['status','Status','l'],['stage','Current stage','l']];
+  var sort={col:null,dir:1};
+  area.innerHTML='<div class="filterbar"><input type="search" id="it-q" placeholder="Search chapter, SME, status…"><span class="itcount" id="it-count"></span></div><div class="tbl-scroll"><table class="tbl" id="it-table"></table></div>';
+  function draw(){
+    var q=(document.getElementById('it-q').value||'').toLowerCase();
+    var rows=d.items.filter(function(i){if(!q)return true;return (i.chapter+' '+i.title+' '+i.sme+' '+i.de+' '+i.status+' '+i.stage).toLowerCase().indexOf(q)>=0;});
+    if(sort.col){rows=rows.slice().sort(function(a,b){var x=a[sort.col],y=b[sort.col];if(sort.col==='q')return ((x||0)-(y||0))*sort.dir;x=String(x==null?'':x).toLowerCase();y=String(y==null?'':y).toLowerCase();return x<y?-sort.dir:(x>y?sort.dir:0);});}
+    document.getElementById('it-count').innerHTML='<b>'+rows.length+'</b> chapter'+(rows.length===1?'':'s');
+    var h='<thead><tr>'+cols.map(function(c){var act=sort.col===c[0];return '<th class="'+(c[2]==='l'?'l ':'')+'sortable" data-col="'+c[0]+'">'+c[1]+(act?' <span class="arw">'+(sort.dir>0?'▲':'▼')+'</span>':'')+'</th>';}).join('')+'</tr></thead><tbody>';
+    rows.forEach(function(i){h+='<tr><td class="l">'+esc(i.chapter)+'</td><td class="l">'+esc(i.title)+'</td><td class="num">'+fmt(i.q)+'</td><td class="l">'+esc(i.sme)+'</td><td class="l">'+esc(i.de)+'</td><td class="l">'+esc(i.status)+'</td><td class="l">'+esc(i.stage)+'</td></tr>';});
+    h+='</tbody>';var t=document.getElementById('it-table');t.innerHTML=h;
+    t.querySelectorAll('th.sortable').forEach(function(th){th.addEventListener('click',function(){var c=th.getAttribute('data-col');if(sort.col===c)sort.dir=-sort.dir;else{sort.col=c;sort.dir=(c==='q'?-1:1);}draw();});});
+  }
+  document.getElementById('it-q').addEventListener('input',draw);draw();
+  var cb=document.getElementById('it-copytbl');if(cb)cb.addEventListener('click',function(){copyTableEl(document.getElementById('it-table'),cb);});
+}
+
+/* ---------- copy helpers ---------- */
+function flash(btn,msg){if(!btn)return;var o=btn.getAttribute('data-lbl')||btn.textContent;btn.setAttribute('data-lbl',o);btn.textContent=msg;btn.classList.add('copied');setTimeout(function(){btn.textContent=o;btn.classList.remove('copied');},1600);}
+function fallbackCopy(text,cb){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);if(cb)cb();}
+function copyTableEl(tbl,btn){if(!tbl)return;var html='<table border="1" cellspacing="0" cellpadding="4">'+tbl.innerHTML+'</table>';var tsv=[];tbl.querySelectorAll('tr').forEach(function(tr){var c=[];tr.querySelectorAll('th,td').forEach(function(cell){c.push((cell.innerText||cell.textContent||'').replace(/\s+/g,' ').trim());});tsv.push(c.join('\t'));});var text=tsv.join('\n');var done=function(){flash(btn,'✓ Copied');};
+  if(navigator.clipboard&&window.ClipboardItem){try{navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([text],{type:'text/plain'})})]).then(done).catch(function(){fallbackCopy(text,done);});}catch(e){fallbackCopy(text,done);}}else fallbackCopy(text,done);}
+function dl(blob,nm){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nm;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},2000);}
+function copyImageEl(el,btn){if(!el||!window.html2canvas){flash(btn,'lib not loaded');return;}flash(btn,'Rendering…');html2canvas(el,{backgroundColor:'#ffffff',scale:2,logging:false}).then(function(cv){cv.toBlob(function(blob){if(navigator.clipboard&&window.ClipboardItem){try{navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(function(){flash(btn,'✓ Copied');}).catch(function(){dl(blob,'eaq.png');flash(btn,'⤓ Downloaded');});}catch(e){dl(blob,'eaq.png');flash(btn,'⤓ Downloaded');}}else{dl(blob,'eaq.png');flash(btn,'⤓ Downloaded');}});}).catch(function(){flash(btn,'Failed');});}
+
+/* ---------- tabs + loader ---------- */
+function setBadges(){var d=DATA.details||{};if(d.Hockenberry)document.getElementById('b-h').textContent=fmt(d.Hockenberry.meta.total);if(d.Turner)document.getElementById('b-t').textContent=fmt(d.Turner.meta.total);}
+function setTab(k){activeKey=k;document.querySelectorAll('.topnav .tab').forEach(function(t){t.classList.toggle('active',t.getAttribute('data-key')===k);});
+  document.getElementById('panel-overview').classList.toggle('active',k==='overview');document.getElementById('panel-detail').classList.toggle('active',k!=='overview');
+  if(k==='overview')renderOverview();else renderDetail(k);}
+document.querySelectorAll('.topnav .tab').forEach(function(t){t.addEventListener('click',function(){setTab(t.getAttribute('data-key'));});});
+var _seq=0;
+function loadLive(){
+  if(!CONFIG.APPS_SCRIPT_URL){setConn('demo','Preview data');document.getElementById('synced').textContent='snapshot';afterData();return;}
+  setConn('loading','Fetching…');var cb='__eaq_cb_'+(++_seq)+'_'+Date.now(),s=null;
+  var timer=setTimeout(function(){cleanup();setConn('error','Timed out — snapshot');afterData();},CONFIG.FETCH_TIMEOUT_MS);
+  function cleanup(){try{delete window[cb];}catch(e){window[cb]=undefined;}if(s&&s.parentNode)s.parentNode.removeChild(s);clearTimeout(timer);}
+  window[cb]=function(p){cleanup();if(!p||p.ok===false){setConn('error','Sheet error — snapshot');afterData();return;}
+    DATA=p;setConn('ok','Live · '+new Date(p.generatedAt).toLocaleTimeString());document.getElementById('synced').textContent=new Date(p.generatedAt).toLocaleString();var st=document.getElementById('setup');if(st)st.style.display='none';afterData();};
+  s=document.createElement('script');s.src=CONFIG.APPS_SCRIPT_URL+(CONFIG.APPS_SCRIPT_URL.indexOf('?')<0?'?':'&')+'callback='+cb+'&app=eaq&t='+Date.now();
+  s.onerror=function(){cleanup();setConn('error','Network error — snapshot');afterData();};document.body.appendChild(s);
+}
+function afterData(){setBadges();setTab(activeKey);}
+document.getElementById('refreshBtn').addEventListener('click',loadLive);
+if(!CONFIG.APPS_SCRIPT_URL)document.getElementById('synced').textContent='snapshot · deploy script to go live';
+loadLive();
+</script>
+</body>
+</html>

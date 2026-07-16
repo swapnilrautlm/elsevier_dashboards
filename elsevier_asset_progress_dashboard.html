@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Elsevier · Asset Progress — Live</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+:root{
+  --els-orange:#FF6C00; --els-orange-dk:#D95A00; --els-navy:#12233B; --els-ink:#1A1A1A;
+  --els-teal:#2E7C9C; --els-teal-dk:#1F6A8C; --els-green:#3E7D4F;
+  --bg:#F7F8FA; --card:#FFFFFF; --line:#E6E8EC; --line-2:#D5D9DF;
+  --ink:#1A1A1A; --ink-2:#4A4E57; --ink-3:#767B85; --ink-4:#AFB4BD;
+  --s1:#FFB067; --s2:#FF8A3D; --s3:#2E7C9C; --s4:#FF6C00; --s5:#B85311; --s6:#1F6A8C; --s7:#3E7D4F;
+  --done:#3E7D4F; --active:#FF6C00; --idle:#C7CBD1;
+  --shadow-sm:0 1px 2px rgba(16,24,40,.05),0 1px 1px rgba(16,24,40,.04);
+  --shadow-md:0 6px 20px rgba(16,24,40,.08),0 2px 6px rgba(16,24,40,.05);
+  --radius:12px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:700;color:var(--els-ink);letter-spacing:-.01em}
+h1{font-size:20px;font-weight:800}
+h3{font-size:15px}
+.accent{color:var(--els-orange)}
+
+.brand-bar{background:var(--els-navy);color:#fff;padding:14px 30px;display:flex;align-items:center;gap:20px}
+.brand-bar .logo{font-size:24px;font-weight:800;letter-spacing:-.02em;color:#fff}
+.brand-bar .logo .dot{color:var(--els-orange)}
+.brand-bar .divider{width:1px;height:32px;background:rgba(255,255,255,.22)}
+.brand-bar .title-block{display:flex;flex-direction:column;line-height:1.2}
+.brand-bar .eyebrow{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--els-orange)}
+.brand-bar .name{font-size:14px;font-weight:600;color:#fff}
+.brand-bar .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:12px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.22)}
+.conn-dot{width:8px;height:8px;border-radius:50%;background:var(--ink-4)}
+.conn-dot.ok{background:#5BD08A}.conn-dot.loading{background:#FFC44D;animation:pulse 1s infinite}.conn-dot.error{background:#FF6B6B}.conn-dot.demo{background:var(--els-orange)}
+@keyframes pulse{50%{opacity:.35}}
+.brand-bar button{font:inherit;cursor:pointer;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.08);color:#fff;padding:8px 14px;border-radius:7px;font-size:13px;font-weight:600}
+.brand-bar button:hover{background:rgba(255,255,255,.18)}
+
+/* tab nav */
+.topnav{position:sticky;top:0;z-index:50;background:var(--card);border-bottom:1px solid var(--line);padding:0 22px;display:flex;gap:2px;overflow-x:auto;box-shadow:var(--shadow-sm)}
+.topnav .tab{font:inherit;background:transparent;border:0;cursor:pointer;color:var(--ink-2);padding:14px 16px 11px;font-size:13px;font-weight:600;border-bottom:3px solid transparent;white-space:nowrap;display:inline-flex;align-items:center;gap:8px}
+.topnav .tab:hover{color:var(--els-ink)}
+.topnav .tab.active{color:var(--els-orange);border-bottom-color:var(--els-orange)}
+.topnav .tab .badge{font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--bg);color:var(--ink-3)}
+.topnav .tab.active .badge{background:#FFE9D6;color:var(--els-orange-dk)}
+
+main{padding:20px 30px 70px;max-width:1500px;margin:0 auto}
+.panel{display:none}.panel.active{display:block}
+
+.hero{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 24px;box-shadow:var(--shadow-sm);margin-bottom:14px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--els-orange)}
+.hero .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--els-orange)}
+.hero h1{font-size:20px;margin-top:2px}
+.hero .lede{font-size:13.5px;color:var(--ink-2);margin-top:4px}
+.hero .meta-row{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--ink-3);margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.hero .meta-row b{color:var(--ink-2);font-weight:600}
+
+.kpi-row{display:grid;gap:14px;margin-bottom:16px}
+.kpi-row.c4{grid-template-columns:repeat(4,1fr)}
+.kpi-row.c5{grid-template-columns:repeat(5,1fr)}
+@media(max-width:1000px){.kpi-row.c4,.kpi-row.c5{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.kpi-row.c4,.kpi-row.c5{grid-template-columns:1fr}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 18px;position:relative;overflow:hidden;box-shadow:var(--shadow-sm)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--els-orange)}
+.kpi.teal::before{background:var(--els-teal)}.kpi.green::before{background:var(--els-green)}.kpi.navy::before{background:var(--els-navy)}.kpi.grey::before{background:var(--ink-4)}
+.kpi .label{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.kpi .num{font-size:30px;font-weight:800;color:var(--els-ink);margin-top:4px;line-height:1.05}
+.kpi .sub{font-size:11.5px;color:var(--ink-3);margin-top:4px}
+
+.grid-2{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:1050px){.grid-2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-sm);margin-bottom:16px}
+.card .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+.card h3{margin-bottom:3px}
+.card .card-sub{font-size:12px;color:var(--ink-3)}
+
+table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+table.tbl th,table.tbl td{padding:10px 10px;text-align:center;border-bottom:1px solid var(--line)}
+table.tbl th{font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-3);background:#FBFBFC}
+table.tbl th.l,table.tbl td.l{text-align:left}
+table.tbl td.num{font-variant-numeric:tabular-nums;color:var(--ink-2)}
+table.tbl td.zero{color:var(--ink-4)}
+table.tbl .stagecell{display:inline-flex;min-width:30px;justify-content:center;padding:3px 8px;border-radius:6px;font-weight:600;font-variant-numeric:tabular-nums}
+table.tbl tr.total-row td{border-top:2px solid var(--line-2);border-bottom:none;font-weight:800;color:var(--els-ink);background:#FBFBFC}
+.compl-wrap{display:flex;align-items:center;gap:9px;min-width:120px}
+.compl-bar{flex:1;height:7px;border-radius:999px;background:var(--line);overflow:hidden}
+.compl-bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--els-orange),var(--els-orange-dk));border-radius:999px}
+.compl-val{font-variant-numeric:tabular-nums;font-weight:700;color:var(--els-ink);min-width:48px;text-align:right}
+
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-2);margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.legend .item{display:inline-flex;align-items:center;gap:6px}
+.legend .sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+.chart-box{position:relative;height:300px}
+.chart-box.sm{height:260px}
+
+/* workflow matrix */
+.wf-row{display:grid;grid-template-columns:170px 1fr 92px;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid var(--line)}
+.wf-row:last-child{border-bottom:0}
+.wf-name{font-size:12.5px;color:var(--els-ink);font-weight:600}
+.wf-name small{display:block;font-weight:500;color:var(--ink-4);font-size:10.5px}
+.wf-track{height:16px;border-radius:6px;background:#F0F2F5;overflow:hidden;position:relative}
+.wf-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--s1),var(--els-orange))}
+.wf-val{text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.wf-val b{color:var(--els-ink)}
+
+/* sme workload */
+.wl-bar{display:flex;height:14px;border-radius:5px;overflow:hidden;background:var(--idle);min-width:120px}
+.wl-bar>i{display:block;height:100%}
+.wl-done{background:var(--done)}.wl-active{background:var(--active)}.wl-idle{background:var(--idle)}
+.mini-legend{display:flex;gap:14px;font-size:11.5px;color:var(--ink-2);margin-bottom:12px}
+
+.filterbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.filterbar input,.filterbar select{font:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--line-2);border-radius:7px;background:var(--card);color:var(--ink)}
+.filterbar input[type=search]{min-width:220px}
+.pillchip{display:inline-flex;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;background:#EEF1F4;color:var(--ink-2)}
+.tbl-scroll{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.tbl-scroll table.tbl th{position:sticky;top:0;z-index:1}
+
+.setup{max-width:760px;margin:14px auto;background:#FBFBFC;border:1px dashed var(--line-2);border-radius:10px;padding:14px 18px;font-size:12.5px;color:var(--ink-2)}
+.setup code{background:rgba(255,108,0,.10);color:var(--els-orange-dk);padding:1px 6px;border-radius:4px}
+.foot{font-size:11.5px;color:var(--ink-4);text-align:center;margin-top:26px}
+.muted{color:var(--ink-3);font-size:12.5px}
+.btn{font:inherit;cursor:pointer;padding:7px 12px;border-radius:7px;border:1px solid var(--line-2);background:var(--card);color:var(--ink-2);font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:#F1F3F5}
+.btn.copied{color:var(--els-green);border-color:var(--els-green)}
+.card-head .right{display:flex;gap:8px;flex-wrap:wrap}
+.caret{display:inline-block;width:14px;color:var(--els-orange);font-size:11px}
+.wl-main.clickable{cursor:pointer}
+.wl-main.clickable:hover{background:#FBFBFC}
+.sub-wrap{padding:6px 0 10px 2px}
+table.tbl.sub{background:#FCFCFD;border:1px solid var(--line);border-radius:6px;margin:2px 0}
+table.tbl.sub th{background:#F4F6F8}
+table.tbl.sub td,table.tbl.sub th{padding:7px 9px}
+.filterbar{align-items:center}
+.itcount{margin-left:auto;font-size:12px;color:var(--ink-3);font-weight:500;background:#FFF3E9;border:1px solid #FFE0C4;border-radius:999px;padding:6px 13px;white-space:nowrap}
+.itcount b{color:var(--els-orange-dk);font-weight:800;font-variant-numeric:tabular-nums}
+table.tbl th.sortable{cursor:pointer;user-select:none;white-space:nowrap}
+table.tbl th.sortable:hover{color:var(--els-orange)}
+table.tbl th .arw{color:var(--els-orange);font-size:9px;margin-left:2px;vertical-align:middle}
+</style>
+</head>
+<body>
+
+<div class="brand-bar">
+  <div class="logo">Elsevier<span class="dot">.</span></div>
+  <div class="divider"></div>
+  <div class="title-block">
+    <span class="eyebrow">HESI · Content Production</span>
+    <span class="name">Asset Progress Tracker</span>
+  </div>
+  <div class="right">
+    <span class="pill" id="conn"><span class="conn-dot demo" id="conn-dot"></span><span id="conn-text">Preview data</span></span>
+    <button id="refreshBtn" type="button" title="Re-fetch from Google Sheets">↻ Refresh</button>
+  </div>
+</div>
+
+<nav class="topnav" id="topnav">
+  <button class="tab active" data-key="overview">Asset Progress</button>
+  <button class="tab" data-key="NGN Unfolding">NGN Unfolding <span class="badge" id="b-ngnu">—</span></button>
+  <button class="tab" data-key="NGN Standalone">NGN Standalone <span class="badge" id="b-ngns">—</span></button>
+  <button class="tab" data-key="A2 Assessment">A2 Assessment <span class="badge" id="b-a2">—</span></button>
+  <button class="tab" data-key="Allied Health">Allied Health <span class="badge" id="b-al">—</span></button>
+</nav>
+
+<main>
+  <!-- ============ OVERVIEW ============ -->
+  <section class="panel active" id="panel-overview">
+    <div class="hero">
+      <div class="eyebrow">Live Progress</div>
+      <h1>Asset production status across <span class="accent">all four workstreams</span></h1>
+      <p class="lede">A live, computed roll-up of every asset's current production stage across the four HESI trackers, mapped to the seven-stage pipeline.</p>
+      <div class="meta-row">
+        <span>Source: <b>ELRL1 – HESI – Phase 4 Execution Plan</b></span>
+        <span>Last synced: <b id="synced">—</b></span>
+        <span>Assets tracked: <b id="meta-total">—</b></span>
+        <span>Mapping: <b>Status → Stage (Dropdown/Workflows)</b></span>
+      </div>
+    </div>
+
+    <div class="kpi-row c4">
+      <div class="kpi navy"><div class="label">Total Assets</div><div class="num" id="k-total">—</div><div class="sub">Planned scope across 4 workstreams</div></div>
+      <div class="kpi"><div class="label">In Production</div><div class="num" id="k-progress">—</div><div class="sub"><span id="k-progress-pct">—</span> of scope started</div></div>
+      <div class="kpi green"><div class="label">Published</div><div class="num" id="k-pub">—</div><div class="sub">Signed off &amp; delivered</div></div>
+      <div class="kpi teal"><div class="label">Overall Completion</div><div class="num" id="k-compl">—</div><div class="sub">Weighted stage progress</div></div>
+    </div>
+
+    <div class="card" id="lp-card">
+      <div class="card-head"><div><h3>Live Progress by asset &amp; stage</h3><div class="card-sub">Item counts at each production stage. Completion % is weighted across the seven stages.</div></div>
+        <div class="right"><button class="btn" id="copyTableBtn">⧉ Copy table</button><button class="btn" id="copyImgBtn">🖼 Copy image</button></div></div>
+      <div style="overflow-x:auto"><table class="tbl" id="lp-table"><thead></thead><tbody></tbody></table></div>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card"><div class="card-head"><div><h3>Stage distribution by asset</h3><div class="card-sub">Where each asset's started items currently sit.</div></div></div><div class="chart-box"><canvas id="stackChart"></canvas></div></div>
+      <div class="card"><div class="card-head"><div><h3>Overall pipeline mix</h3><div class="card-sub">All started items, by stage.</div></div></div><div class="chart-box"><canvas id="donutChart"></canvas></div></div>
+    </div>
+
+    <div class="setup" id="setup">
+      <b>Go live:</b> deploy <code>Elsevier_AssetProgress_AppsScript.gs</code> as a Web app (Anyone access), then paste the <code>/exec</code> URL into
+      <code>CONFIG.APPS_SCRIPT_URL</code> near the top of this file's &lt;script&gt; block.
+    </div>
+  </section>
+
+  <!-- ============ ASSET DETAIL (re-rendered per tab) ============ -->
+  <section class="panel" id="panel-detail"></section>
+
+  <div class="foot">Built by LearningMate for Elsevier · HESI Content Production · computed live from the Phase 4 Execution Plan</div>
+</main>
+
+<script>
+/* ============================================================ CONFIG */
+var CONFIG = {
+  APPS_SCRIPT_URL: 'https://script.google.com/a/macros/learningmate.com/s/AKfycbxKSjRv2hGp_n-uRAJSvIMqyktcsOypNDKpPUWhj84joNq2GVo7-rMh2WXY4_zOJTnx/exec',
+  FETCH_TIMEOUT_MS: 30000
+};
+
+/* Overview fallback snapshot (computed 2026-07-16) */
+var FALLBACK = {ok:true,generatedAt:'2026-07-16T00:00:00Z',
+ stageOrder:['LM Authoring','LM DE Review','ELS SME Review','LM DCS','LM Copyedit','Elsevier Approve and Publish','PUBLISHED'],
+ stageLabels:['LM Authoring','LM DE Review','ELS SME Review','LM DCS','LM Copyedit','Approve & Publish','PUBLISHED'],
+ assets:[
+  {name:'A2 Assessment',total:350,stages:{'LM Authoring':25,'LM DE Review':25,'ELS SME Review':25,'LM DCS':0,'LM Copyedit':150,'Elsevier Approve and Publish':0,'PUBLISHED':0},started:225,notStarted:125,completion:36.73},
+  {name:'Allied Health',total:405,stages:{'LM Authoring':65,'LM DE Review':20,'ELS SME Review':0,'LM DCS':0,'LM Copyedit':0,'Elsevier Approve and Publish':0,'PUBLISHED':0},started:85,notStarted:320,completion:3.70},
+  {name:'NGN Standalone',total:400,stages:{'LM Authoring':15,'LM DE Review':13,'ELS SME Review':13,'LM DCS':0,'LM Copyedit':2,'Elsevier Approve and Publish':0,'PUBLISHED':0},started:43,notStarted:357,completion:3.21},
+  {name:'NGN Unfolding',total:400,stages:{'LM Authoring':29,'LM DE Review':18,'ELS SME Review':28,'LM DCS':7,'LM Copyedit':6,'Elsevier Approve and Publish':0,'PUBLISHED':11},started:99,notStarted:301,completion:10.14}],
+ totals:{total:1555,started:452,notStarted:1103,published:11,stages:{'LM Authoring':134,'LM DE Review':76,'ELS SME Review':66,'LM DCS':7,'LM Copyedit':158,'Elsevier Approve and Publish':0,'PUBLISHED':11},completion:12.67}};
+
+/* Per-asset detail fallback (aggregates only; item tables load live) */
+var FALLBACK_DETAILS = /*FBD*/{"NGN Unfolding":{"name":"NGN Unfolding","meta":{"total":400,"started":101,"notStarted":299,"disciplines":7,"smes":27,"completed":11},"workflow":[{"stage":"Start Date","planned":400,"completed":101,"pct":25.2},{"stage":"SME Writing","planned":400,"completed":72,"pct":18.0},{"stage":"DE/SME Review","planned":400,"completed":70,"pct":17.5},{"stage":"QuAD Integration","planned":400,"completed":68,"pct":17.0},{"stage":"QuAD Review","planned":400,"completed":56,"pct":14.0},{"stage":"QuAD Fixes","planned":400,"completed":46,"pct":11.5},{"stage":"QuAD Signoff","planned":400,"completed":50,"pct":12.5},{"stage":"Alpha Delivery","planned":400,"completed":50,"pct":12.5},{"stage":"Alpha Review","planned":400,"completed":24,"pct":6.0},{"stage":"Beta Delivery","planned":400,"completed":17,"pct":4.2},{"stage":"Beta Review","planned":400,"completed":17,"pct":4.2},{"stage":"Copyediting","planned":400,"completed":11,"pct":2.8},{"stage":"Gold Delivery","planned":400,"completed":11,"pct":2.8},{"stage":"Signoff","planned":400,"completed":11,"pct":2.8}],"statusDist":[{"status":"Not started","count":301},{"status":"Alpha Delivery","count":28},{"status":"Assigned","count":25},{"status":"Gold Review & SO","count":11},{"status":"QuAD Review","count":11},{"status":"Alpha CFI","count":7},{"status":"CE WIP","count":6},{"status":"QuAD Validation","count":3},{"status":"CS Review","count":3},{"status":"CS WIP","count":3},{"status":"QuAD Fixes","count":1},{"status":"CO Review","count":1}],"smeWorkload":[{"sme":"Unassigned","total":78,"completed":0,"active":1,"notStarted":77},{"sme":"Filipina Hernandez","total":31,"completed":2,"active":23,"notStarted":6},{"sme":"Ashley Kinder","total":25,"completed":0,"active":7,"notStarted":18},{"sme":"Kellie Wilford","total":24,"completed":5,"active":12,"notStarted":7},{"sme":"Bryan Kennedy","total":23,"completed":2,"active":6,"notStarted":15},{"sme":"Kerri Thornton","total":19,"completed":0,"active":2,"notStarted":17},{"sme":"Kathryn VanRavenstein","total":18,"completed":0,"active":1,"notStarted":17},{"sme":"Nai'eema Jackson","total":17,"completed":1,"active":1,"notStarted":15},{"sme":"Laurie DeGroot","total":17,"completed":0,"active":0,"notStarted":17},{"sme":"Dr Lorena Smith","total":16,"completed":0,"active":3,"notStarted":13},{"sme":"Kari Morris","total":15,"completed":0,"active":5,"notStarted":10},{"sme":"Dr. Chawndel E","total":13,"completed":0,"active":1,"notStarted":12},{"sme":"Danielle Hunton","total":12,"completed":1,"active":1,"notStarted":10},{"sme":"Mara Joseph","total":12,"completed":0,"active":2,"notStarted":10},{"sme":"Jennifer Becker","total":11,"completed":0,"active":1,"notStarted":10},{"sme":"Victoria meyers","total":11,"completed":0,"active":7,"notStarted":4},{"sme":"Dr. Yolanda Coleman","total":9,"completed":0,"active":0,"notStarted":9},{"sme":"Yovaletta Scruggs","total":8,"completed":0,"active":2,"notStarted":6},{"sme":"Traci Gabbard","total":6,"completed":0,"active":1,"notStarted":5},{"sme":"Amy Kennedy","total":6,"completed":0,"active":6,"notStarted":0}]},"NGN Standalone":{"name":"NGN Standalone","meta":{"total":400,"started":28,"notStarted":372,"disciplines":20,"smes":4,"completed":0},"workflow":[{"stage":"Start Date","planned":48,"completed":28,"pct":7.0},{"stage":"SME Writing","planned":400,"completed":28,"pct":7.0},{"stage":"DE/SME Review","planned":400,"completed":25,"pct":6.2},{"stage":"QuAD Integration","planned":400,"completed":25,"pct":6.2},{"stage":"QuAD Review","planned":400,"completed":25,"pct":6.2},{"stage":"QuAD Signoff","planned":400,"completed":15,"pct":3.8},{"stage":"Alpha Delivery","planned":400,"completed":15,"pct":3.8},{"stage":"Alpha Review","planned":400,"completed":2,"pct":0.5},{"stage":"Beta Delivery","planned":400,"completed":2,"pct":0.5},{"stage":"Beta Review","planned":400,"completed":2,"pct":0.5},{"stage":"Copyediting","planned":400,"completed":0,"pct":0.0},{"stage":"Gold Delivery","planned":400,"completed":0,"pct":0.0},{"stage":"Signoff","planned":400,"completed":0,"pct":0.0}],"statusDist":[{"status":"Not started","count":357},{"status":"Assigned","count":15},{"status":"Alpha Delivery","count":13},{"status":"QuAD Review","count":13},{"status":"CE Ready","count":2}],"smeWorkload":[{"sme":"Unassigned","total":337,"completed":0,"active":0,"notStarted":337},{"sme":"Bryan Kennedy","total":21,"completed":0,"active":10,"notStarted":11},{"sme":"Danielle Hunton","total":20,"completed":0,"active":11,"notStarted":9},{"sme":"Kari Morris","total":17,"completed":0,"active":17,"notStarted":0},{"sme":"Laurie DeGroot","total":5,"completed":0,"active":5,"notStarted":0}]},"A2 Assessment":{"name":"A2 Assessment","meta":{"total":350,"started":225,"notStarted":125,"disciplines":7,"smes":6,"completed":0},"workflow":[{"stage":"Start Date","planned":350,"completed":225,"pct":64.3},{"stage":"SME Writing","planned":350,"completed":200,"pct":57.1},{"stage":"DE/SME Review","planned":350,"completed":175,"pct":50.0},{"stage":"CopyEdit","planned":350,"completed":25,"pct":7.1},{"stage":"Internal Fixes","planned":350,"completed":25,"pct":7.1},{"stage":"LM Alpha Delivery","planned":350,"completed":25,"pct":7.1},{"stage":"Elsevier Alpha Feedback","planned":350,"completed":0,"pct":0.0},{"stage":"LM Alpha CFI","planned":350,"completed":0,"pct":0.0},{"stage":"GOLD Delivery","planned":350,"completed":0,"pct":0.0},{"stage":"Elsevier Sign-off","planned":350,"completed":0,"pct":0.0}],"statusDist":[{"status":"Under Copy Editing","count":150},{"status":"Planned","count":125},{"status":"Alpha Delivery","count":25},{"status":"Ready for Review - DE","count":25},{"status":"Assigned","count":25}],"smeWorkload":[{"sme":"Katie Foley","total":100,"completed":0,"active":100,"notStarted":0},{"sme":"Patty Bostwick","total":50,"completed":0,"active":50,"notStarted":0},{"sme":"Dr. Aimee Castillo-Griffin","total":50,"completed":0,"active":50,"notStarted":0},{"sme":"Christina Hardin","total":50,"completed":0,"active":25,"notStarted":25},{"sme":"SME1","total":50,"completed":0,"active":0,"notStarted":50},{"sme":"SME2","total":50,"completed":0,"active":0,"notStarted":50}]},"Allied Health":{"name":"Allied Health","meta":{"total":405,"started":85,"notStarted":320,"disciplines":9,"smes":6,"completed":0},"workflow":[{"stage":"Start Date","planned":405,"completed":85,"pct":21.0},{"stage":"SME Writing","planned":405,"completed":20,"pct":4.9},{"stage":"DE/SME Review","planned":405,"completed":20,"pct":4.9},{"stage":"CopyEdit","planned":405,"completed":0,"pct":0.0},{"stage":"Internal Fixes","planned":405,"completed":0,"pct":0.0},{"stage":"LM Alpha Delivery","planned":405,"completed":0,"pct":0.0},{"stage":"Elsevier Alpha Feedback","planned":405,"completed":0,"pct":0.0},{"stage":"LM Alpha CFI","planned":405,"completed":0,"pct":0.0},{"stage":"GOLD Delivery","planned":405,"completed":0,"pct":0.0},{"stage":"Elsevier Sign-off","planned":405,"completed":0,"pct":0.0}],"statusDist":[{"status":"Planned","count":320},{"status":"Assigned","count":65},{"status":"Internal Review Before Alpha","count":20}],"smeWorkload":[{"sme":"Pam Giannone","total":175,"completed":0,"active":60,"notStarted":115},{"sme":"SME1","total":75,"completed":0,"active":0,"notStarted":75},{"sme":"Jennifer Preuss","total":50,"completed":0,"active":25,"notStarted":25},{"sme":"SME2","total":50,"completed":0,"active":0,"notStarted":50},{"sme":"SME3","total":50,"completed":0,"active":0,"notStarted":50},{"sme":"SME4","total":5,"completed":0,"active":0,"notStarted":5}]}}/*FBD*/;
+
+var STAGE_HEX=['#FFB067','#FF8A3D','#2E7C9C','#FF6C00','#B85311','#1F6A8C','#3E7D4F'];
+var DATA=FALLBACK, DETAILS=FALLBACK_DETAILS, activeKey='overview';
+var charts={stack:null,donut:null,status:null};
+
+function fmt(n){return (n==null?'—':Math.round(Number(n)).toLocaleString());}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function setConn(state,text){document.getElementById('conn-dot').className='conn-dot '+state;document.getElementById('conn-text').textContent=text;}
+
+/* ---------- badges ---------- */
+function setBadges(){
+  var map={'NGN Unfolding':'b-ngnu','NGN Standalone':'b-ngns','A2 Assessment':'b-a2','Allied Health':'b-al'};
+  Object.keys(map).forEach(function(k){var d=DETAILS[k];if(d)document.getElementById(map[k]).textContent=fmt(d.meta.total);});
+}
+
+/* ================= OVERVIEW ================= */
+function renderOverview(){
+  var d=DATA,S=d.stageOrder,L=d.stageLabels;
+  document.getElementById('k-total').textContent=fmt(d.totals.total);
+  document.getElementById('k-progress').textContent=fmt(d.totals.started);
+  document.getElementById('k-progress-pct').textContent=(d.totals.total?Math.round(d.totals.started/d.totals.total*100):0)+'%';
+  document.getElementById('k-pub').textContent=fmt(d.totals.published);
+  document.getElementById('k-compl').textContent=d.totals.completion.toFixed(2)+'%';
+  document.getElementById('meta-total').textContent=fmt(d.totals.total)+' items · '+d.assets.length+' workstreams';
+
+  var thead=document.querySelector('#lp-table thead'),tbody=document.querySelector('#lp-table tbody');
+  var head='<tr><th class="l">Asset</th><th>Total</th>';L.forEach(function(l){head+='<th>'+l+'</th>';});head+='<th style="min-width:150px">Completion %</th></tr>';
+  thead.innerHTML=head;
+  var body='';
+  d.assets.forEach(function(a){
+    body+='<tr><td class="l"><b>'+esc(a.name)+'</b></td><td class="num"><b>'+fmt(a.total)+'</b></td>';
+    S.forEach(function(s,i){var v=a.stages[s]||0;body+='<td class="num'+(v===0?' zero':'')+'">'+(v===0?'0':'<span class="stagecell" style="background:'+tint(i)+';color:'+STAGE_HEX[i]+'">'+fmt(v)+'</span>')+'</td>';});
+    body+='<td>'+complCell(a.completion)+'</td></tr>';
+  });
+  body+='<tr class="total-row"><td class="l">TOTAL</td><td class="num">'+fmt(d.totals.total)+'</td>';
+  S.forEach(function(s){var v=d.totals.stages[s]||0;body+='<td class="num'+(v===0?' zero':'')+'">'+fmt(v)+'</td>';});
+  body+='<td>'+complCell(d.totals.completion)+'</td></tr>';
+  tbody.innerHTML=body;
+  document.getElementById('legend').innerHTML=L.map(function(l,i){return '<span class="item"><span class="sw" style="background:'+STAGE_HEX[i]+'"></span>'+l+'</span>';}).join('')+'<span class="item" style="margin-left:auto;color:var(--ink-3)">Orange = LearningMate · Teal = Elsevier · Green = Published</span>';
+  drawStack();drawDonut();
+}
+function tint(i){return ['#FFF1E4','#FFEBDD','#E7F1F6','#FFEBDB','#F5E7DE','#E6EFF4','#E7F1EA'][i]||'#F2F3F5';}
+function complCell(v){return '<div class="compl-wrap"><div class="compl-bar"><span style="width:'+Math.min(100,v)+'%"></span></div><span class="compl-val">'+v.toFixed(2)+'%</span></div>';}
+function drawStack(){
+  var ctx=document.getElementById('stackChart');if(charts.stack)charts.stack.destroy();var d=DATA;
+  charts.stack=new Chart(ctx,{type:'bar',data:{labels:d.assets.map(function(a){return a.name;}),datasets:d.stageOrder.map(function(s,i){return{label:d.stageLabels[i],data:d.assets.map(function(a){return a.stages[s]||0;}),backgroundColor:STAGE_HEX[i],borderWidth:0,borderRadius:3};})},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{color:'#EEF0F3'},ticks:{font:{size:11}}},y:{stacked:true,grid:{display:false},ticks:{font:{size:12,weight:'600'}}}},plugins:{legend:{position:'bottom',labels:{boxWidth:11,boxHeight:11,font:{size:11},padding:12}}}}});
+}
+function drawDonut(){
+  var ctx=document.getElementById('donutChart');if(charts.donut)charts.donut.destroy();var d=DATA,vals=d.stageOrder.map(function(s){return d.totals.stages[s]||0;});
+  charts.donut=new Chart(ctx,{type:'doughnut',data:{labels:d.stageLabels,datasets:[{data:vals,backgroundColor:STAGE_HEX,borderColor:'#fff',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{boxWidth:11,boxHeight:11,font:{size:11},padding:8}},tooltip:{callbacks:{label:function(c){var t=vals.reduce(function(a,b){return a+b;},0);return c.label+': '+c.parsed+(t?' ('+Math.round(c.parsed/t*100)+'%)':'');}}}}}});
+}
+
+/* ================= ASSET DETAIL ================= */
+function renderDetail(name){
+  var d=DETAILS[name];var host=document.getElementById('panel-detail');
+  if(!d){host.innerHTML='<div class="card"><h3>'+esc(name)+'</h3><p class="muted">No data available yet. Click Refresh to load from the sheet.</p></div>';return;}
+  var m=d.meta, pct=m.total?Math.round(m.started/m.total*100):0;
+  var maxWf=Math.max.apply(null,d.workflow.map(function(w){return w.completed;}).concat([1]));
+  var maxStatus=Math.max.apply(null,d.statusDist.map(function(s){return s.count;}).concat([1]));
+
+  var html=''+
+  '<div class="hero"><div class="eyebrow">Tracker Detail</div><h1>'+esc(name)+' <span class="accent">production tracker</span></h1>'+
+  '<p class="lede">Workflow progress, current status and SME workload. A stage is counted complete when its actual date is filled in the tracker.</p>'+
+  '<div class="meta-row"><span>Total items: <b>'+fmt(m.total)+'</b></span><span>Started: <b>'+fmt(m.started)+'</b> ('+pct+'%)</span><span>Published: <b>'+fmt(m.completed)+'</b></span><span>Disciplines: <b>'+fmt(m.disciplines)+'</b></span><span>SMEs: <b>'+fmt(m.smes)+'</b></span></div></div>'+
+
+  '<div class="kpi-row c5">'+
+   kpi('Total Items',fmt(m.total),'Planned scope','navy')+
+   kpi('In Production',fmt(m.started),pct+'% started','')+
+   kpi('Not Started',fmt(m.notStarted),'Awaiting assignment/start','grey')+
+   kpi('Published',fmt(m.completed),'Final sign-off complete','green')+
+   kpi('Active SMEs',fmt(m.smes),'Named subject-matter experts','teal')+
+  '</div>'+
+
+  '<div class="grid-2">'+
+   '<div class="card"><div class="card-head"><div><h3>Workflow matrix</h3><div class="card-sub">Items with each stage’s actual date filled (i.e. that stage complete).</div></div></div><div id="wf-list"></div></div>'+
+   '<div class="card"><div class="card-head"><div><h3>Current status</h3><div class="card-sub">Live distribution of the Status column.</div></div></div><div class="chart-box sm"><canvas id="statusChart"></canvas></div></div>'+
+  '</div>'+
+
+  '<div class="card"><div class="card-head"><div><h3>SME workload</h3><div class="card-sub">Items per subject-matter expert, split by progress. Click a name to see their topics.</div></div><div class="right"><button class="btn" id="wl-toggle">Expand all</button></div></div>'+
+   '<div class="mini-legend"><span class="item"><span class="sw" style="background:var(--done)"></span>Published</span><span class="item"><span class="sw" style="background:var(--active)"></span>In progress</span><span class="item"><span class="sw" style="background:var(--idle)"></span>Not started</span></div>'+
+   '<div style="overflow-x:auto"><table class="tbl" id="wl-table"></table></div></div>'+
+
+  '<div class="card"><div class="card-head"><div><h3>Item detail</h3><div class="card-sub" id="item-sub">Topic-level breakdown.</div></div></div>'+
+   '<div id="item-area"></div></div>';
+
+  host.innerHTML=html;
+
+  // workflow bars
+  document.getElementById('wf-list').innerHTML=d.workflow.map(function(w){
+    var wpct=Math.round(w.completed/maxWf*100);
+    return '<div class="wf-row"><div class="wf-name">'+esc(w.stage)+'</div>'+
+      '<div class="wf-track"><div class="wf-fill" style="width:'+wpct+'%"></div></div>'+
+      '<div class="wf-val"><b>'+fmt(w.completed)+'</b> / '+fmt(m.total)+' &nbsp;('+w.pct+'%)</div></div>';
+  }).join('');
+
+  // status chart
+  if(charts.status)charts.status.destroy();
+  charts.status=new Chart(document.getElementById('statusChart'),{type:'bar',data:{labels:d.statusDist.map(function(s){return s.status;}),datasets:[{data:d.statusDist.map(function(s){return s.count;}),backgroundColor:d.statusDist.map(function(s){return /not started|planned|not assigned/i.test(s.status)?'#C7CBD1':'#FF6C00';}),borderRadius:4,borderWidth:0}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.x+' items';}}}},scales:{x:{grid:{color:'#EEF0F3'},ticks:{font:{size:11}}},y:{grid:{display:false},ticks:{font:{size:11.5}}}}}});
+
+  // sme workload table (expandable + sortable — click a name to see their topics)
+  var byS={};
+  var hasItems=d.items&&d.items.length;
+  if(hasItems)d.items.forEach(function(it){(byS[it.sme]=byS[it.sme]||[]).push(it);});
+  var wlCols=[['sme','SME','l'],['total','Total','n'],['_p','Progress','p'],['completed','Published','n'],['active','In progress','n'],['notStarted','Not started','n']];
+  var wlSort={col:null,dir:1};
+  var wlt=document.getElementById('wl-table');
+  function drawWL(){
+    var list=d.smeWorkload.slice();
+    if(wlSort.col){list.sort(function(a,b){
+      if(wlSort.col==='sme'){var x=String(a.sme).toLowerCase(),y=String(b.sme).toLowerCase();return x<y?-wlSort.dir:(x>y?wlSort.dir:0);}
+      return ((a[wlSort.col]||0)-(b[wlSort.col]||0))*wlSort.dir;});}
+    var head='<thead><tr><th class="l" style="width:24px"></th>'+wlCols.map(function(c){
+      if(c[2]==='p')return '<th style="min-width:190px">'+c[1]+'</th>';
+      var act=wlSort.col===c[0];
+      return '<th class="'+(c[2]==='l'?'l ':'')+'sortable" data-col="'+c[0]+'">'+c[1]+(act?' <span class="arw">'+(wlSort.dir>0?'▲':'▼')+'</span>':'')+'</th>';}).join('')+'</tr></thead><tbody>';
+    var wl=head;
+    list.forEach(function(s,idx){
+      var t=s.total||1;
+      wl+='<tr class="wl-main'+(hasItems?' clickable':'')+'" data-idx="'+idx+'"><td class="l">'+(hasItems?'<span class="caret" id="ck-'+idx+'">▸</span>':'')+'</td>'+
+        '<td class="l">'+esc(s.sme)+'</td><td class="num"><b>'+fmt(s.total)+'</b></td>'+
+        '<td><div class="wl-bar"><i class="wl-done" style="width:'+(s.completed/t*100)+'%"></i><i class="wl-active" style="width:'+(s.active/t*100)+'%"></i><i class="wl-idle" style="width:'+(s.notStarted/t*100)+'%"></i></div></td>'+
+        '<td class="num'+(s.completed?'':' zero')+'">'+fmt(s.completed)+'</td><td class="num'+(s.active?'':' zero')+'">'+fmt(s.active)+'</td><td class="num'+(s.notStarted?'':' zero')+'">'+fmt(s.notStarted)+'</td></tr>';
+      if(hasItems){
+        var il=byS[s.sme]||[];
+        var sub='<tr class="wl-detail" id="wd-'+idx+'" style="display:none"><td></td><td colspan="6" class="l"><div class="sub-wrap">';
+        if(il.length){
+          sub+='<table class="tbl sub"><thead><tr><th class="l">Topic</th><th class="l">Discipline</th><th class="l">Status</th><th class="l">Current stage</th></tr></thead><tbody>';
+          il.forEach(function(i){sub+='<tr><td class="l">'+esc(i.topic)+'</td><td class="l">'+esc(i.disc)+'</td><td class="l">'+esc(i.status)+'</td><td class="l">'+esc(i.stage)+'</td></tr>';});
+          sub+='</tbody></table>';
+        } else sub+='<span class="muted">No item rows for this SME.</span>';
+        sub+='</div></td></tr>';
+        wl+=sub;
+      }
+    });
+    wl+='</tbody>';wlt.innerHTML=wl;
+    if(hasItems)Array.prototype.forEach.call(wlt.querySelectorAll('.wl-main.clickable'),function(row){row.addEventListener('click',function(){toggleRow(row.getAttribute('data-idx'));});});
+    Array.prototype.forEach.call(wlt.querySelectorAll('th.sortable'),function(th){th.addEventListener('click',function(){var c=th.getAttribute('data-col');if(wlSort.col===c)wlSort.dir=-wlSort.dir;else{wlSort.col=c;wlSort.dir=(c==='sme'?1:-1);}drawWL();});});
+    var tg=document.getElementById('wl-toggle');if(tg){tg.setAttribute('data-open','0');tg.textContent='Expand all';}
+  }
+  drawWL();
+  var wtg=document.getElementById('wl-toggle');
+  if(hasItems&&wtg)wtg.addEventListener('click',function(){
+    var open=wtg.getAttribute('data-open')==='1';
+    Array.prototype.forEach.call(wlt.querySelectorAll('.wl-detail'),function(dr){dr.style.display=open?'none':'';});
+    Array.prototype.forEach.call(wlt.querySelectorAll('.caret'),function(ck){ck.textContent=open?'▸':'▾';});
+    wtg.setAttribute('data-open',open?'0':'1');wtg.textContent=open?'Expand all':'Collapse all';
+  });
+  else if(wtg)wtg.style.display='none';
+
+  renderItems(name,d);
+}
+function kpi(label,num,sub,cls){return '<div class="kpi '+cls+'"><div class="label">'+label+'</div><div class="num">'+num+'</div><div class="sub">'+sub+'</div></div>';}
+function toggleRow(i){var dr=document.getElementById('wd-'+i),ck=document.getElementById('ck-'+i);if(!dr)return;var open=dr.style.display!=='none';dr.style.display=open?'none':'';if(ck)ck.textContent=open?'▸':'▾';}
+
+/* ---------- copy table / image ---------- */
+function flash(id,msg){var b=document.getElementById(id);if(!b)return;var o=b.getAttribute('data-lbl')||b.textContent;b.setAttribute('data-lbl',o);b.textContent=msg;b.classList.add('copied');setTimeout(function(){b.textContent=o;b.classList.remove('copied');},1600);}
+function fallbackCopy(text,cb){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);if(cb)cb();}
+function copyTable(){
+  var tbl=document.getElementById('lp-table');if(!tbl)return;
+  var html='<table border="1" cellspacing="0" cellpadding="4">'+tbl.innerHTML+'</table>';
+  var tsv=[];Array.prototype.forEach.call(tbl.querySelectorAll('tr'),function(tr){var c=[];Array.prototype.forEach.call(tr.querySelectorAll('th,td'),function(cell){c.push((cell.innerText||cell.textContent||'').replace(/\s+/g,' ').trim());});tsv.push(c.join('\t'));});
+  var text=tsv.join('\n'),done=function(){flash('copyTableBtn','✓ Copied');};
+  if(navigator.clipboard&&window.ClipboardItem){try{navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([text],{type:'text/plain'})})]).then(done).catch(function(){fallbackCopy(text,done);});}catch(e){fallbackCopy(text,done);}}
+  else fallbackCopy(text,done);
+}
+function downloadBlob(blob,nm){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nm;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},2000);}
+function copyImage(){
+  var el=document.getElementById('lp-card');if(!el)return;
+  if(!window.html2canvas){flash('copyImgBtn','lib not loaded');return;}
+  flash('copyImgBtn','Rendering…');
+  html2canvas(el,{backgroundColor:'#ffffff',scale:2,logging:false}).then(function(canvas){
+    canvas.toBlob(function(blob){
+      if(navigator.clipboard&&window.ClipboardItem){try{navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(function(){flash('copyImgBtn','✓ Copied');}).catch(function(){downloadBlob(blob,'live-progress.png');flash('copyImgBtn','⤓ Downloaded');});}catch(e){downloadBlob(blob,'live-progress.png');flash('copyImgBtn','⤓ Downloaded');}}
+      else {downloadBlob(blob,'live-progress.png');flash('copyImgBtn','⤓ Downloaded');}
+    });
+  }).catch(function(){flash('copyImgBtn','Failed');});
+}
+
+function renderItems(name,d){
+  var area=document.getElementById('item-area');
+  if(!d.items||!d.items.length){area.innerHTML='<p class="muted">Topic-level rows load from the live sheet — click Refresh once connected.</p>';return;}
+  var seen={},discs=[];d.items.forEach(function(i){var v=i.disc;if(v&&!seen[v]){seen[v]=1;discs.push(v);}});discs.sort();
+  var cols=[['topic','Topic'],['disc','Discipline'],['sme','SME'],['rev','Reviewer'],['status','Status'],['stage','Current stage']];
+  var sort={col:null,dir:1};
+  area.innerHTML='<div class="filterbar"><input type="search" id="it-q" placeholder="Search topic, SME, status…"><select id="it-disc"><option value="">All disciplines</option>'+discs.map(function(x){return '<option>'+esc(x)+'</option>';}).join('')+'</select><span class="itcount" id="it-count"></span></div><div class="tbl-scroll"><table class="tbl" id="it-table"></table></div>';
+  function draw(){
+    var q=(document.getElementById('it-q').value||'').toLowerCase();var dc=document.getElementById('it-disc').value;
+    var rows=d.items.filter(function(i){
+      if(dc&&String(i.disc)!==dc)return false;
+      if(q){var hay=(i.topic+' '+i.sme+' '+i.status+' '+i.disc+' '+i.rev+' '+i.stage).toLowerCase();if(hay.indexOf(q)<0)return false;}
+      return true;});
+    if(sort.col){rows=rows.slice().sort(function(a,b){var x=(a[sort.col]==null?'':String(a[sort.col])).toLowerCase(),y=(b[sort.col]==null?'':String(b[sort.col])).toLowerCase();return x<y?-sort.dir:(x>y?sort.dir:0);});}
+    document.getElementById('it-count').innerHTML='<b>'+rows.length+'</b> item'+(rows.length===1?'':'s');
+    var h='<thead><tr>'+cols.map(function(c){var act=sort.col===c[0];return '<th class="l sortable" data-col="'+c[0]+'">'+c[1]+(act?' <span class="arw">'+(sort.dir>0?'▲':'▼')+'</span>':'')+'</th>';}).join('')+'</tr></thead><tbody>';
+    rows.slice(0,600).forEach(function(i){h+='<tr><td class="l">'+esc(i.topic)+'</td><td class="l">'+esc(i.disc)+'</td><td class="l">'+esc(i.sme)+'</td><td class="l">'+esc(i.rev)+'</td><td class="l">'+esc(i.status)+'</td><td class="l">'+esc(i.stage)+'</td></tr>';});
+    h+='</tbody>';var t=document.getElementById('it-table');t.innerHTML=h;
+    Array.prototype.forEach.call(t.querySelectorAll('th.sortable'),function(th){th.addEventListener('click',function(){var c=th.getAttribute('data-col');if(sort.col===c)sort.dir=-sort.dir;else{sort.col=c;sort.dir=1;}draw();});});
+  }
+  document.getElementById('it-q').addEventListener('input',draw);
+  document.getElementById('it-disc').addEventListener('change',draw);draw();
+}
+
+/* ================= TABS ================= */
+function setTab(key){
+  activeKey=key;
+  Array.prototype.forEach.call(document.querySelectorAll('.topnav .tab'),function(t){t.classList.toggle('active',t.getAttribute('data-key')===key);});
+  document.getElementById('panel-overview').classList.toggle('active',key==='overview');
+  document.getElementById('panel-detail').classList.toggle('active',key!=='overview');
+  if(key==='overview')renderOverview(); else renderDetail(key);
+}
+Array.prototype.forEach.call(document.querySelectorAll('.topnav .tab'),function(t){t.addEventListener('click',function(){setTab(t.getAttribute('data-key'));});});
+
+/* ================= JSONP LOADER ================= */
+var _seq=0;
+function loadLive(){
+  if(!CONFIG.APPS_SCRIPT_URL){setConn('demo','Preview data');document.getElementById('synced').textContent='snapshot';afterData();return;}
+  setConn('loading','Fetching…');
+  var cb='__els_cb_'+(++_seq)+'_'+Date.now(),s=null;
+  var timer=setTimeout(function(){cleanup();setConn('error','Timed out — snapshot');afterData();},CONFIG.FETCH_TIMEOUT_MS);
+  function cleanup(){try{delete window[cb];}catch(e){window[cb]=undefined;}if(s&&s.parentNode)s.parentNode.removeChild(s);clearTimeout(timer);}
+  window[cb]=function(p){cleanup();
+    if(!p||p.ok===false){setConn('error','Sheet error — snapshot');afterData();return;}
+    DATA=p; if(p.details)DETAILS=p.details;
+    setConn('ok','Live · '+new Date(p.generatedAt).toLocaleTimeString());
+    document.getElementById('synced').textContent=new Date(p.generatedAt).toLocaleString();
+    var setup=document.getElementById('setup');if(setup)setup.style.display='none';
+    afterData();
+  };
+  s=document.createElement('script');
+  s.src=CONFIG.APPS_SCRIPT_URL+(CONFIG.APPS_SCRIPT_URL.indexOf('?')<0?'?':'&')+'callback='+cb+'&t='+Date.now();
+  s.onerror=function(){cleanup();setConn('error','Network error — snapshot');afterData();};
+  document.body.appendChild(s);
+}
+function afterData(){setBadges();setTab(activeKey);}
+document.getElementById('refreshBtn').addEventListener('click',loadLive);
+var _ctb=document.getElementById('copyTableBtn');if(_ctb)_ctb.addEventListener('click',copyTable);
+var _cib=document.getElementById('copyImgBtn');if(_cib)_cib.addEventListener('click',copyImage);
+if(!CONFIG.APPS_SCRIPT_URL)document.getElementById('synced').textContent='snapshot · deploy script to go live';
+loadLive();
+</script>
+</body>
+</html>
