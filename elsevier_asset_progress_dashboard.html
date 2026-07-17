@@ -295,7 +295,8 @@ function renderDetail(name){
   var d=DETAILS[name];var host=document.getElementById('panel-detail');
   if(!d){host.innerHTML='<div class="card"><h3>'+esc(name)+'</h3><p class="muted">No data available yet. Click Refresh to load from the sheet.</p></div>';return;}
   var m=d.meta, pct=m.total?Math.round(m.started/m.total*100):0;
-  var maxWf=Math.max.apply(null,d.workflow.map(function(w){return w.completed;}).concat([1]));
+  var wfRows=d.workflow.filter(function(w){return !/^\s*start date\s*$/i.test(w.stage);});
+  var maxWf=Math.max.apply(null,wfRows.map(function(w){return w.completed;}).concat([1]));
   var maxStatus=Math.max.apply(null,d.statusDist.map(function(s){return s.count;}).concat([1]));
 
   var html=''+
@@ -326,7 +327,7 @@ function renderDetail(name){
   host.innerHTML=html;
 
   // workflow bars
-  document.getElementById('wf-list').innerHTML=d.workflow.map(function(w){
+  document.getElementById('wf-list').innerHTML=wfRows.map(function(w){
     var wpct=Math.round(w.completed/maxWf*100);
     return '<div class="wf-row"><div class="wf-name">'+esc(w.stage)+'</div>'+
       '<div class="wf-track"><div class="wf-fill" style="width:'+wpct+'%"></div></div>'+
