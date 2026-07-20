@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Elsevier · SafeMed — Live Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{--els-orange:#FF6C00;--els-orange-dk:#D95A00;--els-navy:#12233B;--els-ink:#1A1A1A;--els-teal:#2E7C9C;--els-green:#3E7D4F;
+--bg:#F7F8FA;--card:#FFFFFF;--line:#E6E8EC;--line-2:#D5D9DF;--ink:#1A1A1A;--ink-2:#4A4E57;--ink-3:#767B85;--ink-4:#AFB4BD;
+--idle:#C7CBD1;--shadow-sm:0 1px 2px rgba(16,24,40,.05),0 1px 1px rgba(16,24,40,.04);--radius:12px;}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:700;color:var(--els-ink);letter-spacing:-.01em}h1{font-size:20px;font-weight:800}h3{font-size:15px}
+.accent{color:var(--els-orange)}
+.brand-bar{background:var(--els-navy);color:#fff;padding:14px 30px;display:flex;align-items:center;gap:20px}
+.brand-bar .logo{font-size:24px;font-weight:800;letter-spacing:-.02em}.brand-bar .logo .dot{color:var(--els-orange)}
+.brand-bar .divider{width:1px;height:32px;background:rgba(255,255,255,.22)}
+.brand-bar .title-block{display:flex;flex-direction:column;line-height:1.2}
+.brand-bar .eyebrow{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--els-orange)}
+.brand-bar .name{font-size:14px;font-weight:600}
+.brand-bar .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:12px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.22)}
+.conn-dot{width:8px;height:8px;border-radius:50%;background:var(--ink-4)}
+.conn-dot.ok{background:#5BD08A}.conn-dot.loading{background:#FFC44D;animation:pulse 1s infinite}.conn-dot.error{background:#FF6B6B}.conn-dot.demo{background:var(--els-orange)}
+@keyframes pulse{50%{opacity:.35}}
+.brand-bar button{font:inherit;cursor:pointer;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.08);color:#fff;padding:8px 14px;border-radius:7px;font-size:13px;font-weight:600}
+.brand-bar button:hover{background:rgba(255,255,255,.18)}
+.topnav{position:sticky;top:0;z-index:50;background:var(--card);border-bottom:1px solid var(--line);padding:0 22px;display:flex;gap:2px;overflow-x:auto;box-shadow:var(--shadow-sm)}
+.topnav .tab{font:inherit;background:transparent;border:0;cursor:pointer;color:var(--ink-2);padding:14px 16px 11px;font-size:13px;font-weight:600;border-bottom:3px solid transparent;white-space:nowrap}
+.topnav .tab:hover{color:var(--els-ink)}.topnav .tab.active{color:var(--els-orange);border-bottom-color:var(--els-orange)}
+main{padding:20px 30px 70px;max-width:1500px;margin:0 auto}.panel{display:none}.panel.active{display:block}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 24px;box-shadow:var(--shadow-sm);margin-bottom:14px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--els-orange)}
+.hero .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--els-orange)}
+.hero h1{font-size:20px;margin-top:2px}.hero .lede{font-size:13.5px;color:var(--ink-2);margin-top:4px}
+.hero .meta-row{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:var(--ink-3);margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.hero .meta-row b{color:var(--ink-2);font-weight:600}
+.kpi-row{display:grid;gap:14px;margin-bottom:16px}.kpi-row.c6{grid-template-columns:repeat(6,1fr)}
+@media(max-width:1100px){.kpi-row.c6{grid-template-columns:repeat(3,1fr)}}@media(max-width:560px){.kpi-row.c6{grid-template-columns:1fr}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 18px;position:relative;overflow:hidden;box-shadow:var(--shadow-sm)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--els-orange)}
+.kpi.teal::before{background:var(--els-teal)}.kpi.green::before{background:var(--els-green)}.kpi.navy::before{background:var(--els-navy)}.kpi.grey::before{background:var(--ink-4)}
+.kpi .label{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.kpi .num{font-size:28px;font-weight:800;color:var(--els-ink);margin-top:4px;line-height:1.05}.kpi .sub{font-size:11.5px;color:var(--ink-3);margin-top:4px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}@media(max-width:1050px){.grid-2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-sm);margin-bottom:16px}
+.card .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}
+.card h3{margin-bottom:3px}.card .card-sub{font-size:12px;color:var(--ink-3)}
+.card-head .right{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;cursor:pointer;padding:7px 12px;border-radius:7px;border:1px solid var(--line-2);background:var(--card);color:var(--ink-2);font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:#F1F3F5}.btn.copied{color:var(--els-green);border-color:var(--els-green)}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+table.tbl th,table.tbl td{padding:10px 10px;text-align:center;border-bottom:1px solid var(--line)}
+table.tbl th{font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-3);background:#FBFBFC}
+table.tbl th.l,table.tbl td.l{text-align:left}
+table.tbl td.num{font-variant-numeric:tabular-nums;color:var(--ink-2)}table.tbl td.zero{color:var(--ink-4)}
+table.tbl tr.total-row td{border-top:2px solid var(--line-2);font-weight:800;color:var(--els-ink);background:#FBFBFC}
+table.tbl th.sortable{cursor:pointer;user-select:none;white-space:nowrap}table.tbl th.sortable:hover{color:var(--els-orange)}
+table.tbl th .arw{color:var(--els-orange);font-size:9px;margin-left:2px}
+table.tbl .stagecell{display:inline-flex;min-width:28px;justify-content:center;padding:3px 8px;border-radius:6px;font-weight:600;font-variant-numeric:tabular-nums;background:#FFF1E4;color:#D95A00}
+.compl-wrap{display:flex;align-items:center;gap:9px;min-width:120px}
+.compl-bar{flex:1;height:7px;border-radius:999px;background:var(--line);overflow:hidden}
+.compl-bar>span{display:block;height:100%;background:linear-gradient(90deg,var(--els-orange),var(--els-orange-dk));border-radius:999px}
+.compl-val{font-variant-numeric:tabular-nums;font-weight:700;color:var(--els-ink);min-width:46px;text-align:right}
+.chart-box{position:relative;height:300px}.chart-box.sm{height:280px}
+.wf-row{display:grid;grid-template-columns:150px 1fr 110px;align-items:center;gap:12px;padding:7px 0;border-bottom:1px solid var(--line)}
+.wf-row:last-child{border-bottom:0}.wf-name{font-size:12.5px;color:var(--els-ink);font-weight:600}
+.wf-track{height:16px;border-radius:6px;background:#F0F2F5;overflow:hidden}.wf-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#FFB067,var(--els-orange))}
+.wf-val{text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink-2)}.wf-val b{color:var(--els-ink)}
+.filterbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.filterbar input,.filterbar select{font:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--line-2);border-radius:7px;background:var(--card);color:var(--ink)}
+.filterbar input[type=search]{min-width:230px}
+.itcount{margin-left:auto;font-size:12px;color:var(--ink-3);font-weight:500;background:#FFF3E9;border:1px solid #FFE0C4;border-radius:999px;padding:6px 13px;white-space:nowrap}
+.itcount b{color:var(--els-orange-dk);font-weight:800}
+.tbl-scroll{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:8px}.tbl-scroll table.tbl th{position:sticky;top:0;z-index:1}
+.foot{font-size:11.5px;color:var(--ink-4);text-align:center;margin-top:26px}.muted{color:var(--ink-3);font-size:12.5px}
+.setup{max-width:760px;margin:14px auto;background:#FBFBFC;border:1px dashed var(--line-2);border-radius:10px;padding:14px 18px;font-size:12.5px;color:var(--ink-2)}.setup code{background:rgba(255,108,0,.10);color:var(--els-orange-dk);padding:1px 6px;border-radius:4px}
+.badge-pill{display:inline-flex;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700}
+.badge-pill.yes{background:#E7F1EA;color:var(--els-green)}.badge-pill.no{background:#EEF1F4;color:var(--ink-3)}
+</style></head><body>
+<div class="brand-bar">
+  <div class="logo">Elsevier<span class="dot">.</span></div><div class="divider"></div>
+  <div class="title-block"><span class="eyebrow">ELRK7 · SafeMed</span><span class="name">SafeMed Production Dashboard</span></div>
+  <div class="right"><span class="pill" id="conn"><span class="conn-dot demo" id="conn-dot"></span><span id="conn-text">Preview data</span></span><button id="refreshBtn" type="button">&#8635; Refresh</button></div>
+</div>
+<nav class="topnav" id="topnav">
+  <button class="tab active" data-key="overview">Overview</button>
+  <button class="tab" data-key="details">Details</button>
+</nav>
+<main>
+  <section class="panel active" id="panel-overview">
+    <div class="hero"><div class="eyebrow">SafeMed · New Schedule</div><h1>Question delivery &amp; <span class="accent">current status</span></h1>
+    <p class="lede">Live counts by question type, current status, and Gold deliveries — computed from the SafeMed New Schedule.</p>
+    <div class="meta-row"><span>Source: <b>ELRK7 &ndash; SafeMed &ndash; Internal Schedule</b></span><span>Last synced: <b id="synced">&mdash;</b></span></div></div>
+    <div class="kpi-row c6" id="kpis"></div>
+    <div class="card" id="bt-card"><div class="card-head"><div><h3>Questions by type</h3><div class="card-sub">Delivered = Gold Delivery date on/before today.</div></div><div class="right"><button class="btn" id="bt-tbl">&#9741; Copy table</button><button class="btn" id="bt-img">&#128442; Copy image</button></div></div><div style="overflow-x:auto"><table class="tbl" id="bt-table"></table></div></div>
+    <div class="grid-2">
+      <div class="card"><div class="card-head"><div><h3>Current status</h3><div class="card-sub">Questions by Status.</div></div></div><div class="chart-box sm"><canvas id="statusChart"></canvas></div></div>
+      <div class="card"><div class="card-head"><div><h3>Milestone progress</h3><div class="card-sub">Questions past each milestone (date on/before today).</div></div></div><div id="wf-list"></div></div>
+    </div>
+    <div class="card" id="mo-card"><div class="card-head"><div><h3>Monthly delivery</h3><div class="card-sub">Questions by Gold Delivery month — delivered vs upcoming planned.</div></div><div class="right"><button class="btn" id="mo-img">&#128442; Copy image</button></div></div><div class="chart-box"><canvas id="monthChart"></canvas></div></div>
+    <div class="setup" id="setup"><b>Go live:</b> deploy the combined <code>Elsevier_Dashboards_AppsScript.gs</code> and this file already points to the shared web app with <code>?app=safemed</code>.</div>
+  </section>
+  <section class="panel" id="panel-details"></section>
+  <div class="foot">Built by LearningMate for Elsevier &middot; SafeMed</div>
+</main>
+<script>
+var CONFIG={APPS_SCRIPT_URL:'https://script.google.com/a/macros/learningmate.com/s/AKfycbxKSjRv2hGp_n-uRAJSvIMqyktcsOypNDKpPUWhj84joNq2GVo7-rMh2WXY4_zOJTnx/exec',FETCH_TIMEOUT_MS:30000};
+var FALLBACK={"ok":true,"generatedAt":"2026-07-17T00:00:00Z","meta":{"lessons":14,"topics":17.0,"totalQ":317.0,"deliveredQ":64.0,"pendingQ":253.0,"completion":20.2,"KCC":132.0,"KCQ":93.0,"LA":92.0},"byType":{"title":"Questions by type","headers":["Type","Total","Delivered","Pending","Completion %"],"rows":[["KCC",132.0,20.0,112.0,0.15151515151515152],["KCQ",93.0,22.0,71.0,0.23655913978494625],["LA",92.0,22.0,70.0,0.2391304347826087],["TOTAL",317.0,64.0,253.0,0.20189274447949526]]},"workflow":[{"stage":"DMO Draft","KCC":132.0,"KCQ":93.0,"LA":92.0,"total":317.0,"pct":100.0},{"stage":"KCC Authoring","KCC":132.0,"KCQ":93.0,"LA":92.0,"total":317.0,"pct":100.0},{"stage":"Assessment Writing","KCC":132.0,"KCQ":93.0,"LA":92.0,"total":317.0,"pct":100.0},{"stage":"ID DE Review","KCC":132.0,"KCQ":93.0,"LA":92.0,"total":317.0,"pct":100.0},{"stage":"SME Fixes","KCC":132.0,"KCQ":93.0,"LA":92.0,"total":317.0,"pct":100.0},{"stage":"Alpha Delivery","KCC":132.0,"KCQ":93.0,"LA":92.0,"total":317.0,"pct":100.0},{"stage":"LM Alpha CFI","KCC":110.0,"KCQ":77.0,"LA":76.0,"total":263.0,"pct":83.0},{"stage":"Content Freeze","KCC":100.0,"KCQ":71.0,"LA":71.0,"total":242.0,"pct":76.3},{"stage":"Build Alpha","KCC":83.0,"KCQ":59.0,"LA":59.0,"total":201.0,"pct":63.4},{"stage":"Copyediting","KCC":68.0,"KCQ":43.0,"LA":43.0,"total":154.0,"pct":48.6},{"stage":"Beta Delivery","KCC":68.0,"KCQ":43.0,"LA":43.0,"total":154.0,"pct":48.6},{"stage":"Proofreading","KCC":20.0,"KCQ":22.0,"LA":22.0,"total":64.0,"pct":20.2},{"stage":"UAT Fixes","KCC":20.0,"KCQ":22.0,"LA":22.0,"total":64.0,"pct":20.2},{"stage":"Gold Delivery","KCC":20.0,"KCQ":22.0,"LA":22.0,"total":64.0,"pct":20.2}],"statusDist":[{"status":"Build Alpha Delivery","KCC":70.0,"KCQ":44.0,"LA":44.0,"total":158.0,"lessons":7},{"status":"LM Alpha CFI","KCC":24.0,"KCQ":16.0,"LA":15.0,"total":55.0,"lessons":2},{"status":"Alpha Delivery","KCC":19.0,"KCQ":12.0,"LA":12.0,"total":43.0,"lessons":2},{"status":"Build Gold Delivery","KCC":13.0,"KCQ":15.0,"LA":15.0,"total":43.0,"lessons":2},{"status":"Ready for Build","KCC":6.0,"KCQ":6.0,"LA":6.0,"total":18.0,"lessons":1}],"people":[{"name":"Kristen","roles":{"DMO/KCC":317.0,"Assessment":136.0},"lessons":14,"questions":317.0,"roleList":"DMO/KCC, Assessment"},{"name":"Mohan","roles":{"ID":274.0,"DE Review":274.0},"lessons":12,"questions":274.0,"roleList":"ID, DE Review"},{"name":"Dawna","roles":{"Assessment":112.0},"lessons":5,"questions":112.0,"roleList":"Assessment"},{"name":"Delsie","roles":{"Assessment":48.0},"lessons":2,"questions":48.0,"roleList":"Assessment"},{"name":"Rachappa","roles":{"ID":43.0,"DE Review":43.0},"lessons":2,"questions":43.0,"roleList":"ID, DE Review"},{"name":"Delsie/Kristen","roles":{"Assessment":21.0},"lessons":1,"questions":21.0,"roleList":"Assessment"}],"monthly":[{"month":"2026-05","delivered":43.0,"planned":0},{"month":"2026-06","delivered":21.0,"planned":0},{"month":"2026-07","delivered":0,"planned":155.0},{"month":"2026-08","delivered":0,"planned":98.0}],"monthlyType":[{"month":"2026-05","KCC":13.0,"KCQ":15.0,"LA":15.0},{"month":"2026-06","KCC":7.0,"KCQ":7.0,"LA":7.0},{"month":"2026-07","KCC":69.0,"KCQ":43.0,"LA":43.0},{"month":"2026-08","KCC":43.0,"KCQ":28.0,"LA":27.0}],"items":[{"module":"1","lesson":"A","topics":2.0,"kcc":9.0,"kcq":9.0,"la":9.0,"total":27.0,"status":"Build Alpha Delivery","dmo":"Kristen","id":"Mohan","assessment":"Delsie","de":"Mohan","alpha":"2026-05-27","beta":"2026-07-16","gold":"2026-07-27","delivered":false},{"module":"2","lesson":"A","topics":2.0,"kcc":8.0,"kcq":9.0,"la":9.0,"total":26.0,"status":"Build Alpha Delivery","dmo":"Kristen","id":"Mohan","assessment":"Dawna","de":"Mohan","alpha":"2026-05-28","beta":"2026-07-21","gold":"2026-07-30","delivered":false},{"module":"3","lesson":"A","topics":1.0,"kcc":13.0,"kcq":4.0,"la":4.0,"total":21.0,"status":"Build Alpha Delivery","dmo":"Kristen","id":"Mohan","assessment":"Dawna","de":"Mohan","alpha":"2026-05-27","beta":"2026-07-16","gold":"2026-07-27","delivered":false},{"module":"3","lesson":"B","topics":1.0,"kcc":13.0,"kcq":4.0,"la":4.0,"total":21.0,"status":"Build Alpha Delivery","dmo":"Kristen","id":"Mohan","assessment":"Dawna","de":"Mohan","alpha":"2026-05-27","beta":"2026-07-16","gold":"2026-07-27","delivered":false},{"module":"3","lesson":"C","topics":1.0,"kcc":13.0,"kcq":4.0,"la":4.0,"total":21.0,"status":"Build Alpha Delivery","dmo":"Kristen","id":"Mohan","assessment":"Dawna","de":"Mohan","alpha":"2026-05-27","beta":"2026-07-16","gold":"2026-07-27","delivered":false},{"module":"4","lesson":"A","topics":1.0,"kcc":11.0,"kcq":6.0,"la":6.0,"total":23.0,"status":"Alpha Delivery","dmo":"Kristen","id":"Mohan","assessment":"Dawna","de":"Mohan","alpha":"2026-06-15","beta":"2026-07-27","gold":"2026-08-05","delivered":false},{"module":"4","lesson":"B","topics":1.0,"kcc":8.0,"kcq":6.0,"la":6.0,"total":20.0,"status":"Alpha Delivery","dmo":"Kristen","id":"Mohan","assessment":"Kristen","de":"Mohan","alpha":"2026-06-19","beta":"2026-07-31","gold":"2026-08-11","delivered":false},{"module":"4","lesson":"C","topics":1.0,"kcc":16.0,"kcq":10.0,"la":10.0,"total":36.0,"status":"LM Alpha CFI","dmo":"Kristen","id":"Mohan","assessment":"Kristen","de":"Mohan","alpha":"2026-06-25","beta":"2026-08-05","gold":"2026-08-11","delivered":false},{"module":"4","lesson":"D","topics":1.0,"kcc":8.0,"kcq":6.0,"la":5.0,"total":19.0,"status":"LM Alpha CFI","dmo":"Kristen","id":"Mohan","assessment":"Kristen","de":"Mohan","alpha":"2026-06-30","beta":"2026-07-31","gold":"2026-08-11","delivered":false},{"module":"5","lesson":"A","topics":1.0,"kcc":7.0,"kcq":7.0,"la":7.0,"total":21.0,"status":"Build Alpha Delivery","dmo":"Kristen","id":"Mohan","assessment":"Delsie","de":"Mohan","alpha":"2026-05-15","beta":"2026-06-10","gold":"2026-06-19","delivered":true},{"module":"5","lesson":"B","topics":1.0,"kcc":7.0,"kcq":7.0,"la":7.0,"total":21.0,"status":"Build Alpha Delivery","dmo":"Kristen","id":"Mohan","assessment":"Delsie/Kristen","de":"Mohan","alpha":"2026-06-26","beta":"2026-07-22","gold":"2026-07-31","delivered":false},{"module":"5","lesson":"C","topics":1.0,"kcc":6.0,"kcq":7.0,"la":7.0,"total":20.0,"status":"Build Gold Delivery","dmo":"Kristen","id":"Rachappa","assessment":"Kristen","de":"Rachappa","alpha":"2026-04-02","beta":"2026-04-28","gold":"2026-05-07","delivered":true},{"module":"5","lesson":"D","topics":1.0,"kcc":7.0,"kcq":8.0,"la":8.0,"total":23.0,"status":"Build Gold Delivery","dmo":"Kristen","id":"Rachappa","assessment":"Kristen","de":"Rachappa","alpha":"2026-03-30","beta":"2026-04-23","gold":"2026-05-04","delivered":true},{"module":"6","lesson":"A","topics":2.0,"kcc":6.0,"kcq":6.0,"la":6.0,"total":18.0,"status":"Ready for Build","dmo":"Kristen","id":"Mohan","assessment":"Kristen","de":"Mohan","alpha":"2026-07-10","beta":"2026-07-24","gold":"2026-07-31","delivered":false}]};
+var DATA=FALLBACK, activeKey='overview', charts={status:null,month:null};
+function fmt(n){return (n==null||n==='')?'0':Math.round(Number(n)).toLocaleString();}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function setConn(s,t){document.getElementById('conn-dot').className='conn-dot '+s;document.getElementById('conn-text').textContent=t;}
+function rawNum(v){if(typeof v==='number')return v;var n=parseFloat(String(v).replace(/[,%]/g,''));return isNaN(n)?null:n;}
+function fmtCell(h,v){h=String(h||'');if(v===''||v==null)return '';
+  if(typeof v==='number'){if(h.indexOf('%')>=0)return ((v<=1.5?v*100:v)).toFixed(1)+'%';return Number.isInteger(v)?v.toLocaleString():(''+v);}
+  var s=String(v);if(h.indexOf('%')>=0){var n=parseFloat(s);if(!isNaN(n))return (n<=1.5?n*100:n).toFixed(1)+'%';}
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)){var _m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];var _p=s.split('-');return _m[(+_p[1])-1]+' '+(+_p[2])+', '+_p[0];}
+  return s;}
+function monLabel(m){var _m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];var p=String(m).split('-');return _m[(+p[1])-1]+' '+p[0];}
+function complCell(v){v=Number(v)||0;return '<div class="compl-wrap"><div class="compl-bar"><span style="width:'+Math.min(100,v)+'%"></span></div><span class="compl-val">'+v.toFixed(1)+'%</span></div>';}
+
+function sortableTable(tbl,headers,rows){
+  var sort={col:null,dir:1};var body=[],totalRow=null;
+  rows.forEach(function(r){ if(String(r[0]).toUpperCase()==='TOTAL') totalRow=r; else body.push(r); });
+  var pctIdx=-1; headers.forEach(function(h,i){ if(String(h).indexOf('%')>=0) pctIdx=i; });
+  function cell(hd,v,i,isTotal){var hs=String(hd);
+    if(i===0) return '<td class="l"><b>'+esc(fmtCell(hd,v))+'</b></td>';
+    if(i===pctIdx){var p=rawNum(v);if(p!==null&&p<=1.5)p=p*100;return '<td>'+complCell(p==null?0:p)+'</td>';}
+    if(/total/i.test(hs)) return '<td class="num"><b>'+esc(fmtCell(hd,v))+'</b></td>';
+    var n=rawNum(v);
+    if(n!==null){if(isTotal)return '<td class="num">'+esc(fmtCell(hd,v))+'</td>';return '<td class="num'+(n===0?' zero':'')+'">'+(n===0?'0':'<span class="stagecell">'+esc(fmtCell(hd,v))+'</span>')+'</td>';}
+    return '<td class="l">'+esc(fmtCell(hd,v))+'</td>';}
+  function draw(){var rr=body.slice();
+    if(sort.col!==null){var ci=sort.col;rr.sort(function(a,b){var nx=rawNum(a[ci]),ny=rawNum(b[ci]);if(nx!==null&&ny!==null)return (nx-ny)*sort.dir;var x=String(a[ci]==null?'':a[ci]).toLowerCase(),y=String(b[ci]==null?'':b[ci]).toLowerCase();return x<y?-sort.dir:(x>y?sort.dir:0);});}
+    var h='<thead><tr>'+headers.map(function(hd,i){var act=sort.col===i;return '<th class="'+(i===0?'l ':'')+'sortable" data-c="'+i+'">'+esc(String(hd).replace(/\n/g,' '))+(act?' <span class="arw">'+(sort.dir>0?'▲':'▼')+'</span>':'')+'</th>';}).join('')+'</tr></thead><tbody>';
+    rr.forEach(function(row){h+='<tr>'+headers.map(function(hd,i){return cell(hd,row[i],i,false);}).join('')+'</tr>';});
+    if(totalRow)h+='<tr class="total-row">'+headers.map(function(hd,i){return cell(hd,totalRow[i],i,true);}).join('')+'</tr>';
+    h+='</tbody>';tbl.innerHTML=h;
+    tbl.querySelectorAll('th.sortable').forEach(function(th){th.addEventListener('click',function(){var c=+th.getAttribute('data-c');if(sort.col===c)sort.dir=-sort.dir;else{sort.col=c;sort.dir=(c===0?1:-1);}draw();});});
+  }
+  draw();
+}
+function drawMonthly(canvasId,monthly,which){
+  var el=document.getElementById(canvasId);if(!el)return;if(charts[which])charts[which].destroy();
+  var labels=monthly.map(function(m){return monLabel(m.month);});
+  charts[which]=new Chart(el,{type:'bar',data:{labels:labels,datasets:[
+    {label:'Delivered',data:monthly.map(function(m){return m.delivered;}),backgroundColor:'#3E7D4F',borderRadius:4,stack:'s'},
+    {label:'Planned',data:monthly.map(function(m){return m.planned;}),backgroundColor:'#FFB067',borderRadius:4,stack:'s'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:11,boxHeight:11,font:{size:11},padding:12}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y+' questions';}}}},
+    scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11}}},y:{stacked:true,grid:{color:'#EEF0F3'},ticks:{font:{size:11}}}}}});
+}
+
+function renderOverview(){
+  var d=DATA,m=d.meta||{};
+  document.getElementById('kpis').innerHTML=
+    kpi('Total Questions',fmt(m.totalQ),m.lessons+' lessons · '+m.topics+' topics','navy')+
+    kpi('KCC / KCQ / LA',fmt(m.KCC)+' / '+fmt(m.KCQ)+' / '+fmt(m.LA),'By question type','')+
+    kpi('Delivered (GOLD)',fmt(m.deliveredQ),'Gold delivered to date','green')+
+    kpi('Pending',fmt(m.pendingQ),'Not yet delivered','grey')+
+    kpi('Completion',(m.completion||0)+'%','Delivered ÷ total','teal')+
+    kpi('Topics',fmt(m.topics),'Across '+fmt(m.lessons)+' lessons','');
+  sortableTable(document.getElementById('bt-table'),d.byType.headers,d.byType.rows.slice());
+  // status chart
+  if(charts.status)charts.status.destroy();
+  charts.status=new Chart(document.getElementById('statusChart'),{type:'bar',data:{labels:d.statusDist.map(function(s){return s.status;}),datasets:[{data:d.statusDist.map(function(s){return s.total;}),backgroundColor:d.statusDist.map(function(s){return /gold/i.test(s.status)?'#3E7D4F':(/ready|blank|planned/i.test(s.status)?'#C7CBD1':'#FF6C00');}),borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.x+' questions';}}}},scales:{x:{grid:{color:'#EEF0F3'},ticks:{font:{size:11}}},y:{grid:{display:false},ticks:{font:{size:11}}}}}});
+  // workflow bars
+  var maxWf=Math.max.apply(null,d.workflow.map(function(w){return w.total;}).concat([1]));
+  document.getElementById('wf-list').innerHTML=d.workflow.map(function(w){var p=Math.round(w.total/maxWf*100);return '<div class="wf-row"><div class="wf-name">'+esc(w.stage)+'</div><div class="wf-track"><div class="wf-fill" style="width:'+p+'%"></div></div><div class="wf-val"><b>'+fmt(w.total)+'</b> ('+w.pct+'%)</div></div>';}).join('');
+  drawMonthly('monthChart',d.monthly||[],'month');
+}
+function kpi(l,n,s,c){return '<div class="kpi '+c+'"><div class="label">'+l+'</div><div class="num">'+n+'</div><div class="sub">'+s+'</div></div>';}
+
+function renderDetails(){
+  var d=DATA;var host=document.getElementById('panel-details');
+  host.innerHTML=''+
+   '<div class="card"><div class="card-head"><div><h3>People workload</h3><div class="card-sub">Questions each person is assigned across roles.</div></div><div class="right"><button class="btn" id="pp-tbl">&#9741; Copy table</button></div></div><div style="overflow-x:auto"><table class="tbl" id="pp-table"></table></div></div>'+
+   '<div class="card"><div class="card-head"><div><h3>Lesson detail &amp; delivery schedule</h3><div class="card-sub">Per-lesson breakup, owners and milestone dates. Sort by any column.</div></div><div class="right"><button class="btn" id="it-tbl">&#9741; Copy table</button></div></div><div id="item-area"></div></div>';
+  // people table
+  var ph=['Name','Roles','Lessons','Questions'];
+  var pr=(d.people||[]).map(function(p){return [p.name,p.roleList||'',p.lessons,p.questions];});
+  sortableTable(document.getElementById('pp-table'),ph,pr);
+  document.getElementById('pp-tbl').addEventListener('click',function(){copyTableEl(document.getElementById('pp-table'),this);});
+  // items
+  var cols=[['module','Module','l'],['lesson','Lesson','l'],['topics','Topics','n'],['kcc','KCC','n'],['kcq','KCQ','n'],['la','LA','n'],['total','Total','n'],['status','Status','l'],['dmo','DMO/KCC','l'],['id','ID','l'],['assessment','Assessment','l'],['de','DE Review','l'],['alpha','Alpha','l'],['beta','Beta','l'],['gold','Gold Delivery','l'],['delivered','Delivered','l']];
+  var sort={col:null,dir:1};
+  var area=document.getElementById('item-area');
+  area.innerHTML='<div class="filterbar"><input type="search" id="it-q" placeholder="Search lesson, status, person…"><span class="itcount" id="it-count"></span></div><div class="tbl-scroll"><table class="tbl" id="it-table"></table></div>';
+  function draw(){
+    var q=(document.getElementById('it-q').value||'').toLowerCase();
+    var rows=(d.items||[]).filter(function(i){if(!q)return true;return (i.module+' '+i.lesson+' '+i.status+' '+i.dmo+' '+i.id+' '+i.assessment+' '+i.de).toLowerCase().indexOf(q)>=0;});
+    if(sort.col){rows=rows.slice().sort(function(a,b){var x=a[sort.col],y=b[sort.col];if(['topics','kcc','kcq','la','total'].indexOf(sort.col)>=0)return ((x||0)-(y||0))*sort.dir;x=String(x==null?'':x).toLowerCase();y=String(y==null?'':y).toLowerCase();return x<y?-sort.dir:(x>y?sort.dir:0);});}
+    document.getElementById('it-count').innerHTML='<b>'+rows.length+'</b> lessons';
+    var h='<thead><tr>'+cols.map(function(c){var act=sort.col===c[0];return '<th class="'+(c[2]==='l'?'l ':'')+'sortable" data-col="'+c[0]+'">'+c[1]+(act?' <span class="arw">'+(sort.dir>0?'▲':'▼')+'</span>':'')+'</th>';}).join('')+'</tr></thead><tbody>';
+    rows.forEach(function(i){h+='<tr><td class="l">'+esc(i.module)+'</td><td class="l">'+esc(i.lesson)+'</td><td class="num">'+fmt(i.topics)+'</td><td class="num">'+fmt(i.kcc)+'</td><td class="num">'+fmt(i.kcq)+'</td><td class="num">'+fmt(i.la)+'</td><td class="num"><b>'+fmt(i.total)+'</b></td><td class="l">'+esc(i.status)+'</td><td class="l">'+esc(i.dmo)+'</td><td class="l">'+esc(i.id)+'</td><td class="l">'+esc(i.assessment)+'</td><td class="l">'+esc(i.de)+'</td><td class="l">'+esc(fmtCell("date",i.alpha))+'</td><td class="l">'+esc(fmtCell("date",i.beta))+'</td><td class="l">'+esc(fmtCell("date",i.gold))+'</td><td class="l">'+(i.delivered?'<span class="badge-pill yes">Yes</span>':'<span class="badge-pill no">No</span>')+'</td></tr>';});
+    h+='</tbody>';var tb=document.getElementById('it-table');tb.innerHTML=h;
+    tb.querySelectorAll('th.sortable').forEach(function(th){th.addEventListener('click',function(){var c=th.getAttribute('data-col');if(sort.col===c)sort.dir=-sort.dir;else{sort.col=c;sort.dir=(['topics','kcc','kcq','la','total'].indexOf(c)>=0?-1:1);}draw();});});
+  }
+  document.getElementById('it-q').addEventListener('input',draw);draw();
+  document.getElementById('it-tbl').addEventListener('click',function(){copyTableEl(document.getElementById('it-table'),this);});
+}
+
+function flash(btn,msg){if(!btn)return;var o=btn.getAttribute('data-lbl')||btn.textContent;btn.setAttribute('data-lbl',o);btn.textContent=msg;btn.classList.add('copied');setTimeout(function(){btn.textContent=o;btn.classList.remove('copied');},1600);}
+function fallbackCopy(text,cb){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);if(cb)cb();}
+function copyTableEl(tbl,btn){if(!tbl)return;var html='<table border="1" cellspacing="0" cellpadding="4">'+tbl.innerHTML+'</table>';var tsv=[];tbl.querySelectorAll('tr').forEach(function(tr){var c=[];tr.querySelectorAll('th,td').forEach(function(cell){c.push((cell.innerText||cell.textContent||'').replace(/\s+/g,' ').trim());});tsv.push(c.join('\t'));});var text=tsv.join('\n');var done=function(){flash(btn,'✓ Copied');};
+  if(navigator.clipboard&&window.ClipboardItem){try{navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([text],{type:'text/plain'})})]).then(done).catch(function(){fallbackCopy(text,done);});}catch(e){fallbackCopy(text,done);}}else fallbackCopy(text,done);}
+function dl(blob,nm){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nm;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},2000);}
+function copyImageEl(el,btn){if(!el||!window.html2canvas){flash(btn,'lib not loaded');return;}flash(btn,'Rendering…');html2canvas(el,{backgroundColor:'#ffffff',scale:2,logging:false}).then(function(cv){cv.toBlob(function(blob){if(navigator.clipboard&&window.ClipboardItem){try{navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(function(){flash(btn,'✓ Copied');}).catch(function(){dl(blob,'safemed.png');flash(btn,'⤓ Downloaded');});}catch(e){dl(blob,'safemed.png');flash(btn,'⤓ Downloaded');}}else{dl(blob,'safemed.png');flash(btn,'⤓ Downloaded');}});}).catch(function(){flash(btn,'Failed');});}
+
+function setTab(k){activeKey=k;document.querySelectorAll('.topnav .tab').forEach(function(t){t.classList.toggle('active',t.getAttribute('data-key')===k);});
+  document.getElementById('panel-overview').classList.toggle('active',k==='overview');document.getElementById('panel-details').classList.toggle('active',k!=='overview');
+  if(k==='overview')renderOverview();else renderDetails();}
+document.querySelectorAll('.topnav .tab').forEach(function(t){t.addEventListener('click',function(){setTab(t.getAttribute('data-key'));});});
+function wireOverviewCopy(){var a=document.getElementById('bt-tbl');if(a)a.onclick=function(){copyTableEl(document.getElementById('bt-table'),a);};var b=document.getElementById('bt-img');if(b)b.onclick=function(){copyImageEl(document.getElementById('bt-card'),b);};var c=document.getElementById('mo-img');if(c)c.onclick=function(){copyImageEl(document.getElementById('mo-card'),c);};}
+
+var _seq=0;
+function loadLive(){
+  if(!CONFIG.APPS_SCRIPT_URL){setConn('demo','Preview data');document.getElementById('synced').textContent='snapshot';afterData();return;}
+  setConn('loading','Fetching…');var cb='__sm_cb_'+(++_seq)+'_'+Date.now(),s=null;
+  var timer=setTimeout(function(){cleanup();setConn('error','Timed out — snapshot');afterData();},CONFIG.FETCH_TIMEOUT_MS);
+  function cleanup(){try{delete window[cb];}catch(e){window[cb]=undefined;}if(s&&s.parentNode)s.parentNode.removeChild(s);clearTimeout(timer);}
+  window[cb]=function(p){cleanup();if(!p||p.ok===false){setConn('error','Sheet error — snapshot');afterData();return;}
+    DATA=p;setConn('ok','Live · '+new Date(p.generatedAt).toLocaleTimeString());document.getElementById('synced').textContent=new Date(p.generatedAt).toLocaleString();var st=document.getElementById('setup');if(st)st.style.display='none';afterData();};
+  s=document.createElement('script');s.src=CONFIG.APPS_SCRIPT_URL+(CONFIG.APPS_SCRIPT_URL.indexOf('?')<0?'?':'&')+'callback='+cb+'&app=safemed&t='+Date.now();
+  s.onerror=function(){cleanup();setConn('error','Network error — snapshot');afterData();};document.body.appendChild(s);
+}
+function afterData(){setTab(activeKey);wireOverviewCopy();}
+document.getElementById('refreshBtn').addEventListener('click',loadLive);
+if(!CONFIG.APPS_SCRIPT_URL)document.getElementById('synced').textContent='snapshot';
+loadLive();
+</script></body></html>
