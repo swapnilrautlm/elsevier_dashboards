@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Elsevier · Finance — CY26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{--els-orange:#FF6C00;--els-orange-dk:#D95A00;--els-navy:#12233B;--els-ink:#1A1A1A;--els-teal:#2E7C9C;--els-green:#3E7D4F;--els-red:#C0392B;--els-purple:#6C5CE7;--bg:#F7F8FA;--card:#FFFFFF;--line:#E6E8EC;--line-2:#D5D9DF;--ink:#1A1A1A;--ink-2:#4A4E57;--ink-3:#767B85;--ink-4:#AFB4BD;--shadow-sm:0 1px 2px rgba(16,24,40,.05),0 1px 1px rgba(16,24,40,.04);--radius:12px;}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-weight:700;color:var(--els-ink);letter-spacing:-.01em}h1{font-size:20px;font-weight:800}h3{font-size:15px}.accent{color:var(--els-orange)}
+.brand-bar{background:var(--els-navy);color:#fff;padding:14px 30px;display:flex;align-items:center;gap:20px}
+.brand-bar .logo{font-size:24px;font-weight:800;letter-spacing:-.02em}.brand-bar .logo .dot{color:var(--els-orange)}
+.brand-bar .divider{width:1px;height:32px;background:rgba(255,255,255,.22)}.brand-bar .title-block{display:flex;flex-direction:column;line-height:1.2}
+.brand-bar .eyebrow{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--els-orange)}.brand-bar .name{font-size:14px;font-weight:600}
+.brand-bar .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:12px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.22)}
+.conn-dot{width:8px;height:8px;border-radius:50%;background:var(--ink-4)}.conn-dot.ok{background:#5BD08A}.conn-dot.loading{background:#FFC44D;animation:pulse 1s infinite}.conn-dot.error{background:#FF6B6B}.conn-dot.demo{background:var(--els-orange)}
+@keyframes pulse{50%{opacity:.35}}
+.brand-bar button{font:inherit;cursor:pointer;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.08);color:#fff;padding:8px 14px;border-radius:7px;font-size:13px;font-weight:600}.brand-bar button:hover{background:rgba(255,255,255,.18)}
+main{padding:20px 30px 70px;max-width:1500px;margin:0 auto}
+.controls{display:flex;flex-wrap:wrap;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow-sm);margin-bottom:16px}
+.controls .grp{display:flex;flex-direction:column;gap:5px}
+.controls label{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.seg{display:inline-flex;gap:2px;background:#F1F3F5;border-radius:8px;padding:2px}
+.segbtn{font:inherit;cursor:pointer;border:0;background:transparent;color:var(--ink-2);font-size:12px;font-weight:600;padding:7px 14px;border-radius:6px}
+.segbtn.on{background:#fff;color:var(--els-orange);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.hint{margin-left:auto;font-size:11.5px;color:var(--ink-4)}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}@media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.kpi-row{grid-template-columns:1fr}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:15px 18px;position:relative;overflow:hidden;box-shadow:var(--shadow-sm)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--els-orange)}.kpi.red::before{background:var(--els-red)}.kpi.green::before{background:var(--els-green)}.kpi.teal::before{background:var(--els-teal)}
+.kpi .label{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}.kpi .num{font-size:26px;font-weight:800;color:var(--els-ink);margin-top:4px;line-height:1.05}.kpi .sub{font-size:11.5px;color:var(--ink-3);margin-top:4px}
+.grid-2{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-bottom:16px}@media(max-width:1050px){.grid-2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-sm);margin-bottom:16px}
+.card .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}.card h3{margin-bottom:3px}.card .card-sub{font-size:12px;color:var(--ink-3)}.card-head .right{display:flex;gap:8px}
+.btn{font:inherit;cursor:pointer;padding:7px 12px;border-radius:7px;border:1px solid var(--line-2);background:var(--card);color:var(--ink-2);font-size:12px;font-weight:600}.btn:hover{background:#F1F3F5}.btn.copied{color:var(--els-green);border-color:var(--els-green)}
+.chart-box{position:relative;height:330px}.chart-box.sm{height:300px}
+table.tbl{width:100%;border-collapse:collapse;font-size:13px}table.tbl th,table.tbl td{padding:10px 10px;text-align:right;border-bottom:1px solid var(--line)}
+table.tbl th{font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-3);background:#FBFBFC}
+table.tbl th.l,table.tbl td.l{text-align:left}table.tbl td.num{font-variant-numeric:tabular-nums}
+table.tbl tr.total-row td{border-top:2px solid var(--line-2);font-weight:800;color:var(--els-ink);background:#FBFBFC}
+.foot{font-size:11.5px;color:var(--ink-4);text-align:center;margin-top:26px}
+select{font:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--line-2);border-radius:7px;background:var(--card);color:var(--ink)}
+</style></head><body>
+<div class="brand-bar"><div class="logo">Elsevier<span class="dot">.</span></div><div class="divider"></div>
+<div class="title-block"><span class="eyebrow">Finance · CY26</span><span class="name">Revenue, Cost &amp; UCM Dashboard</span></div>
+<div class="right"><span class="pill" id="conn"><span class="conn-dot demo" id="conn-dot"></span><span id="conn-text">Preview data</span></span><button id="refreshBtn">&#8635; Refresh</button></div></div>
+<main>
+  <div class="controls">
+    <div class="grp"><label>Region</label><select id="region"><option value="Total">All regions</option><option value="India">India</option><option value="USA">USA</option><option value="SA">SA</option></select></div>
+    <div class="grp"><label>Period</label><span class="seg" id="gran-seg"></span></div>
+    <span class="hint" id="synced">&mdash;</span>
+  </div>
+  <div class="kpi-row" id="kpis"></div>
+  <div class="grid-2">
+    <div class="card" id="rev-card"><div class="card-head"><div><h3>Revenue by region</h3><div class="card-sub" id="rev-sub">Stacked by India · USA · SA.</div></div><div class="right"><button class="btn" id="rev-img">&#128442; Copy image</button></div></div><div class="chart-box"><canvas id="revChart"></canvas></div></div>
+    <div class="card"><div class="card-head"><div><h3>Revenue mix</h3><div class="card-sub">CY26 share by region.</div></div></div><div class="chart-box sm"><canvas id="mixChart"></canvas></div></div>
+  </div>
+  <div class="card" id="cost-card"><div class="card-head"><div><h3>Cost breakdown — Labor vs Subcon</h3><div class="card-sub" id="cost-sub">Stacked cost composition.</div></div><div class="right"><button class="btn" id="cost-img">&#128442; Copy image</button></div></div><div class="chart-box"><canvas id="costChart"></canvas></div></div>
+  <div class="card" id="fte-card"><div class="card-head"><div><h3>Revenue per FTE — across regions</h3><div class="card-sub" id="fte-sub">Revenue &divide; utilised headcount, per region. (All regions shown regardless of filter.)</div></div><div class="right"><button class="btn" id="fte-img">&#128442; Copy image</button></div></div><div class="chart-box"><canvas id="fteChart"></canvas></div></div>
+  <div class="card"><div class="card-head"><div><h3>UCM % trend</h3><div class="card-sub" id="ucm-sub">UCM &divide; Revenue across the selected period.</div></div></div><div class="chart-box sm"><canvas id="marginChart"></canvas></div></div>
+  <div class="card" id="tbl-card"><div class="card-head"><div><h3>Figures</h3><div class="card-sub" id="tbl-sub">Revenue, Cost, UCM and UCM % by period.</div></div><div class="right"><button class="btn" id="tbl-copy">&#9741; Copy table</button></div></div><div style="overflow-x:auto"><table class="tbl" id="fin-table"></table></div></div>
+  <div class="foot">Built by LearningMate for Elsevier &middot; Finance CY26 &middot; figures as recorded in the CY26 sheet</div>
+</main>
+<script>
+var CONFIG={APPS_SCRIPT_URL:'https://script.google.com/a/macros/learningmate.com/s/AKfycbxKSjRv2hGp_n-uRAJSvIMqyktcsOypNDKpPUWhj84joNq2GVo7-rMh2WXY4_zOJTnx/exec',FETCH_TIMEOUT_MS:30000};
+var FALLBACK={"months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], "regions": {"India": {"rev": [24313.0, 27967.0, 32035.0, 31778.0, 25257.0, 36683.0, 30644.31, 16645.52, 8758.9, 7331.9, 6116.0, 2263.0], "labor": [9255.0, 9808.0, 10339.0, 11694.0, 9744.0, 10277.0, 9847.79, 8863.01, 8863.01, 8863.01, 8863.01, 8863.01], "subcon": [4350.0, 5114.0, 8720.0, 4100.0, 5459.0, 4506.0, 5550.93, 5745.87, 4480.31, 3153.1, 3277.01, 2959.47], "cost": [13605, 14922, 19059, 15794, 15203, 14783, 15398.72, 14608.88, 13343.32, 12016.11, 12140.02, 11822.48], "ucm": [10708, 13045, 12976, 15984, 10054, 21900, 15245.59, 17111.64, 11390.58, 5390.79, 5950.98, 4515.52], "hc": [10.2, 11.8, 9.72, 10.93, 9.04, 10.72, 10.0, 9.0, 9.0, 9.0, 9.0, 9.0]}, "USA": {"rev": [33097.0, 30876.0, 26114.0, 15029.0, 19457.0, 37705.0, 62645.0, 46474.0, 44076.0, 46825.0, 46221.0, 50073.0], "labor": [2915.0, 2747.0, 7363.0, 7226.0, 15377.0, 15518.0, 7826.69, 4891.68, 4891.68, 4891.68, 4891.68, 5870.02], "subcon": [14007.0, 17520.0, 12590.0, 3026.0, 15201.0, 8824.0, 27473.34, 20381.45, 19329.8, 20535.39, 20270.5, 21959.82], "cost": [16922, 20267, 19953, 10252, 30578, 24342, 35300.04, 25273.14, 24221.48, 25427.07, 25162.18, 27829.84], "ucm": [16175, 10609, 6161, 4777, -11121, 13363, 27344.96, 21200.86, 19854.52, 21397.93, 21058.82, 22243.16], "hc": [0.26, 0.29, 0.69, 0.78, 1.6, 1.84, 0.8, 0.5, 0.5, 0.5, 0.5, 0.6]}, "SA": {"rev": [0.0, 0.0, 1100.0, 219.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "labor": [0.0, 0.0, 728.0, 206.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "subcon": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "cost": [0, 0, 728, 206, 0, 0, 0, 0, 0, 0, 0, 0], "ucm": [0.0, 0.0, 372, 13, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "hc": [0.0, 0.0, 0.27, 0.09, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, "Total": {"rev": [57410.0, 58843.0, 59249.0, 47026.0, 44714.0, 74388.0, 93289.31, 63119.52, 52834.9, 54156.9, 52337.0, 52336.0], "labor": [12170.0, 12555.0, 18430.0, 19126.0, 25121.0, 25795.0, 17674.48, 13754.69, 13754.69, 13754.69, 13754.69, 14733.03], "subcon": [18357.0, 22634.0, 21310.0, 7126.0, 20660.0, 13330.0, 33024.27, 26127.32, 23810.11, 23688.49, 23547.51, 24919.29], "cost": [30527, 35189, 39740, 26252, 45781, 39125, 50698.76, 39882.02, 37564.8, 37443.18, 37302.2, 39652.32], "ucm": [26883.0, 23654.0, 19509, 20774, -1067.0, 35263.0, 42590.55, 38312.5, 31245.1, 26788.72, 27009.8, 26758.68], "hc": [10.46, 12.09, 10.68, 11.8, 10.64, 12.56, 10.8, 9.5, 9.5, 9.5, 9.5, 9.6]}}};
+var DATA=FALLBACK, region='Total', gran='Monthly', charts={};
+var COL={India:'#FF6C00',USA:'#2E7C9C',SA:'#3E7D4F'};
+function setConn(s,t){document.getElementById('conn-dot').className='conn-dot '+s;document.getElementById('conn-text').textContent=t;}
+function fmtN(n){n=Number(n)||0;return n.toLocaleString(undefined,{maximumFractionDigits:0});}
+function sum(a,i,j){var s=0;a=a||[];for(var k=i;k<j;k++)s+=a[k]||0;return s;}
+function labels(){if(gran==='Monthly')return DATA.months;if(gran==='Quarterly')return['Q1','Q2','Q3','Q4'];if(gran==='Half-Yearly')return['H1','H2'];return['CY26'];}
+function agg(arr){arr=arr||[];
+  if(gran==='Monthly')return arr.slice();
+  if(gran==='Quarterly')return[sum(arr,0,3),sum(arr,3,6),sum(arr,6,9),sum(arr,9,12)];
+  if(gran==='Half-Yearly')return[sum(arr,0,6),sum(arr,6,12)];
+  return[sum(arr,0,12)];}
+function kpi(l,n,s,c){return '<div class="kpi '+(c||'')+'"><div class="label">'+l+'</div><div class="num">'+n+'</div><div class="sub">'+s+'</div></div>';}
+function destroy(k){if(charts[k]){charts[k].destroy();charts[k]=null;}}
+function moneyY(){return{grid:{color:'#EEF0F3'},ticks:{font:{size:11},callback:function(v){return fmtN(v);}}};}
+function render(){
+  var L=labels();
+  var rg=DATA.regions[region]||DATA.regions.Total;
+  var cyRev=sum(rg.rev,0,12),cyCost=sum(rg.cost,0,12),cyUcm=sum(rg.ucm,0,12),cyHc=sum(rg.hc,0,12);
+  document.getElementById('kpis').innerHTML=
+    kpi('Revenue',fmtN(cyRev),'CY26 · '+region,'')+
+    kpi('Cost',fmtN(cyCost),'Labor '+fmtN(sum(rg.labor,0,12))+' · Subcon '+fmtN(sum(rg.subcon,0,12)),'red')+
+    kpi('UCM',fmtN(cyUcm),(cyRev?(cyUcm/cyRev*100).toFixed(1):0)+'% margin','green')+
+    kpi('Rev / FTE',fmtN(cyHc?cyRev/cyHc:0),'CY26 · '+cyHc.toFixed(1)+' FTE','teal');
+  ['rev','cost'].forEach(function(id){document.getElementById(id+'-sub2');});
+  document.getElementById('rev-sub').textContent=(region==='Total'?'Stacked by India · USA · SA':region+' only')+' · '+gran;
+  document.getElementById('cost-sub').textContent='Labor vs Subcon · '+region+' · '+gran;
+  document.getElementById('fte-sub').textContent='Revenue ÷ utilised headcount · '+gran+' · all regions';
+  document.getElementById('ucm-sub').textContent=gran+' · '+region;
+  document.getElementById('tbl-sub').textContent=gran+' · '+region;
+  // 1) Revenue by region, stacked
+  destroy('rev');
+  var rregs=region==='Total'?['India','USA','SA']:[region];
+  charts.rev=new Chart(document.getElementById('revChart'),{type:'bar',data:{labels:L,datasets:rregs.map(function(g){return{label:g,data:agg(DATA.regions[g].rev),backgroundColor:COL[g],borderRadius:3,stack:'rev'};})},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:11,boxHeight:11,font:{size:11},padding:12}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+fmtN(c.parsed.y);}}}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11}}},y:{stacked:true,beginAtZero:true}}}});
+  charts.rev.options.scales.y=Object.assign({stacked:true,beginAtZero:true},moneyY());charts.rev.update();
+  // 2) Revenue mix donut (CY by region)
+  destroy('mix');
+  var mreg=['India','USA','SA'],mvals=mreg.map(function(r){return sum(DATA.regions[r].rev,0,12);});
+  charts.mix=new Chart(document.getElementById('mixChart'),{type:'doughnut',data:{labels:mreg,datasets:[{data:mvals,backgroundColor:mreg.map(function(r){return COL[r];}),borderColor:'#fff',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{boxWidth:11,boxHeight:11,font:{size:11},padding:10}},tooltip:{callbacks:{label:function(c){var t=mvals.reduce(function(a,b){return a+b;},0);return c.label+': '+fmtN(c.parsed)+(t?' ('+Math.round(c.parsed/t*100)+'%)':'');}}}}}});
+  // 3) Cost breakdown Labor vs Subcon, stacked
+  destroy('cost');
+  charts.cost=new Chart(document.getElementById('costChart'),{type:'bar',data:{labels:L,datasets:[
+    {label:'Labor Cost',data:agg(rg.labor),backgroundColor:'#2E7C9C',borderRadius:3,stack:'c'},
+    {label:'Subcon Cost',data:agg(rg.subcon),backgroundColor:'#FF6C00',borderRadius:3,stack:'c'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:11,boxHeight:11,font:{size:11},padding:12}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+fmtN(c.parsed.y);},footer:function(items){var t=0;items.forEach(function(i){t+=i.parsed.y;});return 'Total: '+fmtN(t);}}}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11}}},y:{stacked:true,beginAtZero:true}}}});
+  charts.cost.options.scales.y=Object.assign({stacked:true,beginAtZero:true},moneyY());charts.cost.update();
+  // 4) Revenue per FTE across regions (grouped) - rev/hc per period per region
+  destroy('fte');
+  var freg=['India','USA','SA'];
+  charts.fte=new Chart(document.getElementById('fteChart'),{type:'bar',data:{labels:L,datasets:freg.map(function(g){var rv=agg(DATA.regions[g].rev),hc=agg(DATA.regions[g].hc);return{label:g,data:rv.map(function(r,i){return hc[i]?Math.round(r/hc[i]):0;}),backgroundColor:COL[g],borderRadius:3};})},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:11,boxHeight:11,font:{size:11},padding:12}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+fmtN(c.parsed.y)+' / FTE';}}}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{beginAtZero:true,grid:{color:'#EEF0F3'},ticks:{font:{size:11},callback:function(v){return fmtN(v);}}}}}});
+  // 5) UCM% line
+  destroy('margin');
+  var rev=agg(rg.rev),ucm=agg(rg.ucm),mp=rev.map(function(rv,i){return rv?+(ucm[i]/rv*100).toFixed(1):0;});
+  charts.margin=new Chart(document.getElementById('marginChart'),{type:'line',data:{labels:L,datasets:[{label:'UCM %',data:mp,borderColor:'#FF6C00',backgroundColor:'rgba(255,108,0,.08)',fill:true,tension:.3,pointRadius:3,pointBackgroundColor:'#FF6C00'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.y+'%';}}}},scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{grid:{color:'#EEF0F3'},ticks:{font:{size:11},callback:function(v){return v+'%';}}}}}});
+  // table
+  var rv2=agg(rg.rev),cs2=agg(rg.cost),uc2=agg(rg.ucm),lb2=agg(rg.labor),sc2=agg(rg.subcon),hc2=agg(rg.hc);
+  var h='<thead><tr><th class="l">Period</th><th>Revenue</th><th>Labor</th><th>Subcon</th><th>Cost</th><th>UCM</th><th>UCM %</th><th>Rev / FTE</th></tr></thead><tbody>';
+  L.forEach(function(lb,i){h+='<tr><td class="l">'+lb+'</td><td class="num">'+fmtN(rv2[i])+'</td><td class="num">'+fmtN(lb2[i])+'</td><td class="num">'+fmtN(sc2[i])+'</td><td class="num">'+fmtN(cs2[i])+'</td><td class="num">'+fmtN(uc2[i])+'</td><td class="num">'+(rv2[i]?(uc2[i]/rv2[i]*100).toFixed(1):0)+'%</td><td class="num">'+fmtN(hc2[i]?rv2[i]/hc2[i]:0)+'</td></tr>';});
+  h+='<tr class="total-row"><td class="l">CY26</td><td class="num">'+fmtN(cyRev)+'</td><td class="num">'+fmtN(sum(rg.labor,0,12))+'</td><td class="num">'+fmtN(sum(rg.subcon,0,12))+'</td><td class="num">'+fmtN(cyCost)+'</td><td class="num">'+fmtN(cyUcm)+'</td><td class="num">'+(cyRev?(cyUcm/cyRev*100).toFixed(1):0)+'%</td><td class="num">'+fmtN(cyHc?cyRev/cyHc:0)+'</td></tr>';
+  h+='</tbody>';document.getElementById('fin-table').innerHTML=h;
+}
+/* controls */
+function buildGran(){var seg=document.getElementById('gran-seg');['Monthly','Quarterly','Half-Yearly','CY'].forEach(function(gname){var b=document.createElement('button');b.className='segbtn';b.textContent=gname;b.setAttribute('data-g',gname==='CY'?'CY':gname);seg.appendChild(b);});
+  Array.prototype.forEach.call(seg.querySelectorAll('button'),function(b){b.addEventListener('click',function(){gran=b.getAttribute('data-g');upSeg();render();});});upSeg();}
+function upSeg(){Array.prototype.forEach.call(document.getElementById('gran-seg').querySelectorAll('button'),function(b){b.classList.toggle('on',b.getAttribute('data-g')===gran);});}
+document.getElementById('region').addEventListener('change',function(){region=this.value;render();});
+/* copy */
+function flash(btn,m){if(!btn)return;var o=btn.getAttribute('data-lbl')||btn.textContent;btn.setAttribute('data-lbl',o);btn.textContent=m;btn.classList.add('copied');setTimeout(function(){btn.textContent=o;btn.classList.remove('copied');},1600);}
+function fbCopy(text,cb){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);if(cb)cb();}
+function copyTableEl(tbl,btn){var html='<table border="1" cellspacing="0" cellpadding="4">'+tbl.innerHTML+'</table>';var tsv=[];tbl.querySelectorAll('tr').forEach(function(tr){var c=[];tr.querySelectorAll('th,td').forEach(function(cell){c.push((cell.innerText||'').replace(/\s+/g,' ').trim());});tsv.push(c.join('\t'));});var text=tsv.join('\n');var done=function(){flash(btn,'✓ Copied');};if(navigator.clipboard&&window.ClipboardItem){try{navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([text],{type:'text/plain'})})]).then(done).catch(function(){fbCopy(text,done);});}catch(e){fbCopy(text,done);}}else fbCopy(text,done);}
+function dl(b,nm){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=nm;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},2000);}
+function copyImageEl(el,btn){if(!el||!window.html2canvas){flash(btn,'lib');return;}flash(btn,'Rendering…');html2canvas(el,{backgroundColor:'#ffffff',scale:2,logging:false}).then(function(cv){cv.toBlob(function(b){if(navigator.clipboard&&window.ClipboardItem){try{navigator.clipboard.write([new ClipboardItem({'image/png':b})]).then(function(){flash(btn,'✓ Copied');}).catch(function(){dl(b,'finance.png');flash(btn,'⤓ Downloaded');});}catch(e){dl(b,'finance.png');flash(btn,'⤓ Downloaded');}}else{dl(b,'finance.png');flash(btn,'⤓ Downloaded');}});}).catch(function(){flash(btn,'Failed');});}
+document.getElementById('rev-img').addEventListener('click',function(){copyImageEl(document.getElementById('rev-card'),this);});
+document.getElementById('cost-img').addEventListener('click',function(){copyImageEl(document.getElementById('cost-card'),this);});
+document.getElementById('fte-img').addEventListener('click',function(){copyImageEl(document.getElementById('fte-card'),this);});
+document.getElementById('tbl-copy').addEventListener('click',function(){copyTableEl(document.getElementById('fin-table'),this);});
+/* loader */
+var _seq=0;
+function loadLive(){if(!CONFIG.APPS_SCRIPT_URL){setConn('demo','Preview data');document.getElementById('synced').textContent='snapshot';after();return;}
+  setConn('loading','Fetching…');var cb='__fin_cb_'+(++_seq)+'_'+Date.now(),s=null;
+  var timer=setTimeout(function(){cleanup();setConn('error','Timed out — snapshot');after();},CONFIG.FETCH_TIMEOUT_MS);
+  function cleanup(){try{delete window[cb];}catch(e){window[cb]=undefined;}if(s&&s.parentNode)s.parentNode.removeChild(s);clearTimeout(timer);}
+  window[cb]=function(p){cleanup();if(!p||p.ok===false){setConn('error','Sheet error — snapshot');after();return;}DATA=p;setConn('ok','Live · '+new Date(p.generatedAt).toLocaleTimeString());document.getElementById('synced').textContent='Synced '+new Date(p.generatedAt).toLocaleString();after();};
+  s=document.createElement('script');s.src=CONFIG.APPS_SCRIPT_URL+(CONFIG.APPS_SCRIPT_URL.indexOf('?')<0?'?':'&')+'callback='+cb+'&app=finance&t='+Date.now();
+  s.onerror=function(){cleanup();setConn('error','Network — snapshot');after();};document.body.appendChild(s);}
+function after(){render();}
+document.getElementById('refreshBtn').addEventListener('click',loadLive);
+if(!CONFIG.APPS_SCRIPT_URL)document.getElementById('synced').textContent='snapshot';
+buildGran();loadLive();
+</script></body></html>
